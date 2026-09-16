@@ -1,1 +1,46 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"novapay-15b","appId":"1:749478028967:android:8dccc4be190de392e75d82","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"novapay-15b","appId":"1:749478028967:ios:ec8e9cb46c5bab95e75d82","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"novapay-15b","configurations":{"android":"1:749478028967:android:8dccc4be190de392e75d82","ios":"1:749478028967:ios:ec8e9cb46c5bab95e75d82","web":"1:749478028967:web:e908a3e33b5c9597e75d82"}}}}}}
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ],
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "novapay-15b",
+          "appId": "1:749478028967:android:8dccc4be190de392e75d82",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "novapay-15b",
+          "appId": "1:749478028967:ios:ec8e9cb46c5bab95e75d82",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "novapay-15b",
+          "configurations": {
+            "android": "1:749478028967:android:8dccc4be190de392e75d82",
+            "ios": "1:749478028967:ios:ec8e9cb46c5bab95e75d82",
+            "web": "1:749478028967:web:e908a3e33b5c9597e75d82"
+          }
+        }
+      }
+    }
+  }
+}
