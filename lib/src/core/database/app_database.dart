@@ -11,8 +11,9 @@ part 'app_database.g.dart';
 ///
 /// This provides offline persistence for:
 /// - A pending action queue (for offline-first sync to backend)
-/// - Local cached transaction history (ledger)
-@DriftDatabase(tables: [PendingQueueItems, LocalTransactions])
+/// - Local cached transaction history (ledger) - used for sync queue management
+/// - Recent transaction history (user-facing) - cached from Firestore for offline viewing
+@DriftDatabase(tables: [PendingQueueItems, LocalTransactions, RecentTransactions])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -137,6 +138,60 @@ class AppDatabase extends _$AppDatabase {
     await (delete(localTransactions)
           ..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan)))
         .go();
+  }
+
+  /// --- RecentTransactions (User-Facing History) ---
+
+  /// Inserts or updates a recent transaction (upsert by firebaseId).
+  /// Used to cache transactions from Firestore for offline viewing.
+  Future<void> saveRecentTransaction({
+    required String id,
+    required int amountInKobo,
+    required String type,
+    required String title,
+    required String status,
+    required String firebaseId,
+    DateTime? createdAt,
+  }) async {
+    final companion = RecentTransactionsCompanion(
+      id: Value(id),
+      amountInKobo: Value(BigInt.from(amountInKobo)),
+      type: Value(type),
+      title: Value(title),
+      status: Value(status),
+      firebaseId: Value(firebaseId),
+      createdAt: Value(createdAt ?? DateTime.now()),
+    );
+
+    await into(recentTransactions).insertOnConflictUpdate(companion);
+  }
+
+  /// Watches all recent transactions ordered by date (newest first).
+  /// Returns a stream for real-time UI updates.
+  Stream<List<RecentTransaction>> watchRecentTransactions() {
+    return (select(recentTransactions)
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .watch();
+  }
+
+  /// Gets a specific recent transaction by ID.
+  Future<RecentTransaction?> getRecentTransactionById(String id) {
+    return (select(recentTransactions)..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  /// Deletes old recent transactions (for cache management).
+  /// Keeps only recent transactions to avoid bloating the database.
+  Future<void> deleteOldRecentTransactions(DateTime olderThan) async {
+    await (delete(recentTransactions)
+          ..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan)))
+        .go();
+  }
+
+  /// Clears all recent transactions (full cache reset).
+  /// Used when user wants to force-refresh from Firestore.
+  Future<void> clearRecentTransactions() async {
+    await delete(recentTransactions).go();
   }
 }
 

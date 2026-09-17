@@ -837,6 +837,477 @@ class LocalTransactionsCompanion extends UpdateCompanion<LocalTransaction> {
   }
 }
 
+class $RecentTransactionsTable extends RecentTransactions
+    with TableInfo<$RecentTransactionsTable, RecentTransaction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecentTransactionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountInKoboMeta = const VerificationMeta(
+    'amountInKobo',
+  );
+  @override
+  late final GeneratedColumn<BigInt> amountInKobo = GeneratedColumn<BigInt>(
+    'amount_in_kobo',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _firebaseIdMeta = const VerificationMeta(
+    'firebaseId',
+  );
+  @override
+  late final GeneratedColumn<String> firebaseId = GeneratedColumn<String>(
+    'firebase_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    amountInKobo,
+    type,
+    title,
+    status,
+    createdAt,
+    firebaseId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recent_transactions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecentTransaction> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('amount_in_kobo')) {
+      context.handle(
+        _amountInKoboMeta,
+        amountInKobo.isAcceptableOrUnknown(
+          data['amount_in_kobo']!,
+          _amountInKoboMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountInKoboMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('firebase_id')) {
+      context.handle(
+        _firebaseIdMeta,
+        firebaseId.isAcceptableOrUnknown(data['firebase_id']!, _firebaseIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firebaseIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecentTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecentTransaction(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      amountInKobo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}amount_in_kobo'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      firebaseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firebase_id'],
+      )!,
+    );
+  }
+
+  @override
+  $RecentTransactionsTable createAlias(String alias) {
+    return $RecentTransactionsTable(attachedDatabase, alias);
+  }
+}
+
+class RecentTransaction extends DataClass
+    implements Insertable<RecentTransaction> {
+  /// Firestore document ID
+  final String id;
+
+  /// Amount stored in kobo (e.g., 20000 = ₦200.00)
+  final BigInt amountInKobo;
+
+  /// Transaction type: 'debit', 'credit', 'savings_contribution'
+  final String type;
+
+  /// Transaction title/description (e.g., "Payment to John", "Salary Deposit")
+  final String title;
+
+  /// Transaction status: 'completed', 'pending', 'failed'
+  final String status;
+
+  /// When the transaction was created
+  final DateTime createdAt;
+
+  /// Unique Firestore document ID for deduplication
+  final String firebaseId;
+  const RecentTransaction({
+    required this.id,
+    required this.amountInKobo,
+    required this.type,
+    required this.title,
+    required this.status,
+    required this.createdAt,
+    required this.firebaseId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['amount_in_kobo'] = Variable<BigInt>(amountInKobo);
+    map['type'] = Variable<String>(type);
+    map['title'] = Variable<String>(title);
+    map['status'] = Variable<String>(status);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['firebase_id'] = Variable<String>(firebaseId);
+    return map;
+  }
+
+  RecentTransactionsCompanion toCompanion(bool nullToAbsent) {
+    return RecentTransactionsCompanion(
+      id: Value(id),
+      amountInKobo: Value(amountInKobo),
+      type: Value(type),
+      title: Value(title),
+      status: Value(status),
+      createdAt: Value(createdAt),
+      firebaseId: Value(firebaseId),
+    );
+  }
+
+  factory RecentTransaction.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecentTransaction(
+      id: serializer.fromJson<String>(json['id']),
+      amountInKobo: serializer.fromJson<BigInt>(json['amountInKobo']),
+      type: serializer.fromJson<String>(json['type']),
+      title: serializer.fromJson<String>(json['title']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      firebaseId: serializer.fromJson<String>(json['firebaseId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'amountInKobo': serializer.toJson<BigInt>(amountInKobo),
+      'type': serializer.toJson<String>(type),
+      'title': serializer.toJson<String>(title),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'firebaseId': serializer.toJson<String>(firebaseId),
+    };
+  }
+
+  RecentTransaction copyWith({
+    String? id,
+    BigInt? amountInKobo,
+    String? type,
+    String? title,
+    String? status,
+    DateTime? createdAt,
+    String? firebaseId,
+  }) => RecentTransaction(
+    id: id ?? this.id,
+    amountInKobo: amountInKobo ?? this.amountInKobo,
+    type: type ?? this.type,
+    title: title ?? this.title,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+    firebaseId: firebaseId ?? this.firebaseId,
+  );
+  RecentTransaction copyWithCompanion(RecentTransactionsCompanion data) {
+    return RecentTransaction(
+      id: data.id.present ? data.id.value : this.id,
+      amountInKobo: data.amountInKobo.present
+          ? data.amountInKobo.value
+          : this.amountInKobo,
+      type: data.type.present ? data.type.value : this.type,
+      title: data.title.present ? data.title.value : this.title,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      firebaseId: data.firebaseId.present
+          ? data.firebaseId.value
+          : this.firebaseId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecentTransaction(')
+          ..write('id: $id, ')
+          ..write('amountInKobo: $amountInKobo, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('firebaseId: $firebaseId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, amountInKobo, type, title, status, createdAt, firebaseId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecentTransaction &&
+          other.id == this.id &&
+          other.amountInKobo == this.amountInKobo &&
+          other.type == this.type &&
+          other.title == this.title &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt &&
+          other.firebaseId == this.firebaseId);
+}
+
+class RecentTransactionsCompanion extends UpdateCompanion<RecentTransaction> {
+  final Value<String> id;
+  final Value<BigInt> amountInKobo;
+  final Value<String> type;
+  final Value<String> title;
+  final Value<String> status;
+  final Value<DateTime> createdAt;
+  final Value<String> firebaseId;
+  final Value<int> rowid;
+  const RecentTransactionsCompanion({
+    this.id = const Value.absent(),
+    this.amountInKobo = const Value.absent(),
+    this.type = const Value.absent(),
+    this.title = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.firebaseId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecentTransactionsCompanion.insert({
+    required String id,
+    required BigInt amountInKobo,
+    required String type,
+    required String title,
+    required String status,
+    this.createdAt = const Value.absent(),
+    required String firebaseId,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       amountInKobo = Value(amountInKobo),
+       type = Value(type),
+       title = Value(title),
+       status = Value(status),
+       firebaseId = Value(firebaseId);
+  static Insertable<RecentTransaction> custom({
+    Expression<String>? id,
+    Expression<BigInt>? amountInKobo,
+    Expression<String>? type,
+    Expression<String>? title,
+    Expression<String>? status,
+    Expression<DateTime>? createdAt,
+    Expression<String>? firebaseId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (amountInKobo != null) 'amount_in_kobo': amountInKobo,
+      if (type != null) 'type': type,
+      if (title != null) 'title': title,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+      if (firebaseId != null) 'firebase_id': firebaseId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecentTransactionsCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? amountInKobo,
+    Value<String>? type,
+    Value<String>? title,
+    Value<String>? status,
+    Value<DateTime>? createdAt,
+    Value<String>? firebaseId,
+    Value<int>? rowid,
+  }) {
+    return RecentTransactionsCompanion(
+      id: id ?? this.id,
+      amountInKobo: amountInKobo ?? this.amountInKobo,
+      type: type ?? this.type,
+      title: title ?? this.title,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      firebaseId: firebaseId ?? this.firebaseId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (amountInKobo.present) {
+      map['amount_in_kobo'] = Variable<BigInt>(amountInKobo.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (firebaseId.present) {
+      map['firebase_id'] = Variable<String>(firebaseId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecentTransactionsCompanion(')
+          ..write('id: $id, ')
+          ..write('amountInKobo: $amountInKobo, ')
+          ..write('type: $type, ')
+          ..write('title: $title, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('firebaseId: $firebaseId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -844,6 +1315,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PendingQueueItemsTable(this);
   late final $LocalTransactionsTable localTransactions =
       $LocalTransactionsTable(this);
+  late final $RecentTransactionsTable recentTransactions =
+      $RecentTransactionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -851,6 +1324,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     pendingQueueItems,
     localTransactions,
+    recentTransactions,
   ];
 }
 
@@ -1344,6 +1818,272 @@ typedef $$LocalTransactionsTableProcessedTableManager =
       LocalTransaction,
       PrefetchHooks Function()
     >;
+typedef $$RecentTransactionsTableCreateCompanionBuilder =
+    RecentTransactionsCompanion Function({
+      required String id,
+      required BigInt amountInKobo,
+      required String type,
+      required String title,
+      required String status,
+      Value<DateTime> createdAt,
+      required String firebaseId,
+      Value<int> rowid,
+    });
+typedef $$RecentTransactionsTableUpdateCompanionBuilder =
+    RecentTransactionsCompanion Function({
+      Value<String> id,
+      Value<BigInt> amountInKobo,
+      Value<String> type,
+      Value<String> title,
+      Value<String> status,
+      Value<DateTime> createdAt,
+      Value<String> firebaseId,
+      Value<int> rowid,
+    });
+
+class $$RecentTransactionsTableFilterComposer
+    extends Composer<_$AppDatabase, $RecentTransactionsTable> {
+  $$RecentTransactionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get amountInKobo => $composableBuilder(
+    column: $table.amountInKobo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get firebaseId => $composableBuilder(
+    column: $table.firebaseId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecentTransactionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecentTransactionsTable> {
+  $$RecentTransactionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get amountInKobo => $composableBuilder(
+    column: $table.amountInKobo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get firebaseId => $composableBuilder(
+    column: $table.firebaseId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecentTransactionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecentTransactionsTable> {
+  $$RecentTransactionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get amountInKobo => $composableBuilder(
+    column: $table.amountInKobo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get firebaseId => $composableBuilder(
+    column: $table.firebaseId,
+    builder: (column) => column,
+  );
+}
+
+class $$RecentTransactionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecentTransactionsTable,
+          RecentTransaction,
+          $$RecentTransactionsTableFilterComposer,
+          $$RecentTransactionsTableOrderingComposer,
+          $$RecentTransactionsTableAnnotationComposer,
+          $$RecentTransactionsTableCreateCompanionBuilder,
+          $$RecentTransactionsTableUpdateCompanionBuilder,
+          (
+            RecentTransaction,
+            BaseReferences<
+              _$AppDatabase,
+              $RecentTransactionsTable,
+              RecentTransaction
+            >,
+          ),
+          RecentTransaction,
+          PrefetchHooks Function()
+        > {
+  $$RecentTransactionsTableTableManager(
+    _$AppDatabase db,
+    $RecentTransactionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecentTransactionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecentTransactionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecentTransactionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> amountInKobo = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> firebaseId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecentTransactionsCompanion(
+                id: id,
+                amountInKobo: amountInKobo,
+                type: type,
+                title: title,
+                status: status,
+                createdAt: createdAt,
+                firebaseId: firebaseId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt amountInKobo,
+                required String type,
+                required String title,
+                required String status,
+                Value<DateTime> createdAt = const Value.absent(),
+                required String firebaseId,
+                Value<int> rowid = const Value.absent(),
+              }) => RecentTransactionsCompanion.insert(
+                id: id,
+                amountInKobo: amountInKobo,
+                type: type,
+                title: title,
+                status: status,
+                createdAt: createdAt,
+                firebaseId: firebaseId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecentTransactionsTable, RecentTransaction>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecentTransactionsTable,
+                    RecentTransaction
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecentTransactionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecentTransactionsTable,
+      RecentTransaction,
+      $$RecentTransactionsTableFilterComposer,
+      $$RecentTransactionsTableOrderingComposer,
+      $$RecentTransactionsTableAnnotationComposer,
+      $$RecentTransactionsTableCreateCompanionBuilder,
+      $$RecentTransactionsTableUpdateCompanionBuilder,
+      (
+        RecentTransaction,
+        BaseReferences<
+          _$AppDatabase,
+          $RecentTransactionsTable,
+          RecentTransaction
+        >,
+      ),
+      RecentTransaction,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1352,6 +2092,8 @@ class $AppDatabaseManager {
       $$PendingQueueItemsTableTableManager(_db, _db.pendingQueueItems);
   $$LocalTransactionsTableTableManager get localTransactions =>
       $$LocalTransactionsTableTableManager(_db, _db.localTransactions);
+  $$RecentTransactionsTableTableManager get recentTransactions =>
+      $$RecentTransactionsTableTableManager(_db, _db.recentTransactions);
 }
 
 // **************************************************************************

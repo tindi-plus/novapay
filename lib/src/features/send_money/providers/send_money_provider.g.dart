@@ -68,7 +68,7 @@ final class RecipientLookupProvider
   }
 }
 
-String _$recipientLookupHash() => r'0ece341eed3df1373abe9b28c9d346ae956082bf';
+String _$recipientLookupHash() => r'c30427a0268b77fc5df9f940723dea08883ca653';
 
 /// Recipient lookup from Firestore by 10-digit NIBSS account number
 
@@ -147,7 +147,7 @@ final class ValidateAmountKoboProvider
 }
 
 String _$validateAmountKoboHash() =>
-    r'b190d59c6ecf258d267e88be58317b28740a65d5';
+    r'c20ab8788f0c2c8733e8614f7a7bd16c83abf121';
 
 /// Validates amount in Kobo against user's wallet balance
 
