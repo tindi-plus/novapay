@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        target: ":drift_dev"
+        import: "package:drift_dev/builder.dart"
+      riverpod_generator:
+        runs_before: ["source_gen:combining_builder"]
+        required_inputs: [".drift.dart", ".g.dart"]

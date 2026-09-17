@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/signup_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/send_money/presentation/send_money_screen.dart';
 import '../features/authentication/providers/auth_providers.dart';
 
 
@@ -13,6 +14,7 @@ import '../features/authentication/providers/auth_providers.dart';
 const String loginPath = '/login';
 const String registerPath = '/register';
 const String homePath = '/home';
+const String sendMoneyPath = '/send-money';
 
 /// A ChangeNotifier that listens to authStateProvider changes and notifies
 /// GoRouter to re-evaluate the redirect logic. This prevents redirect loops
@@ -97,6 +99,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: homePath,
         builder: (context, state) => const HomeScreen(),
+      ),
+      // Send money route
+      GoRoute(
+        path: sendMoneyPath,
+        builder: (context, state) => const SendMoneyScreen(),
       ),
     ],
   );
