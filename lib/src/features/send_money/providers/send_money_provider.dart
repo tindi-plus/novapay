@@ -494,9 +494,9 @@ class SendMoney extends _$SendMoney {
       final payload = {
         'recipientAccountNumber': recipient.accountNumber,
         'recipientFullName': recipient.fullName,
-        'recipientUserId': recipient.userId,
+        'recipientId': recipient.userId,
         'amountInKobo': amountInKobo,
-        'senderUserId': currentUser.id,
+        'senderId': currentUser.id,
         'senderFullName': currentUser.fullName,
       };
 

@@ -55,7 +55,7 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
     setState(() {
       _amountError = null;
     });
-    
+
     // Update controller state with parsed amount
     final amountInKobo = _parseAmountToKobo(value);
     if (amountInKobo != null) {
@@ -91,13 +91,19 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
       return;
     }
 
-    // Get form state
-    final formState = ref.read(sendMoneyProvider);
-    final recipient = formState.recipient;
+    // Get recipient from the lookup provider
+    final recipient = ref
+        .read(
+          recipientLookupProvider(
+            accountNumber: _accountNumberController.text.trim(),
+          ),
+        )
+        .requireValue;
 
     if (recipient == null) {
       setState(() {
-        _recipientLookupError = 'Recipient not found. Please verify account number';
+        _recipientLookupError =
+            'Recipient not found. Please verify account number';
       });
       return;
     }
@@ -124,9 +130,9 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
 
             // Check if success (pop to previous screen)
             final finalState = ref.read(sendMoneyProvider);
-            if (finalState.error == null &&
-                finalState.idempotencyKey != null) {
-              if (mounted) {
+            if (finalState.error == null && finalState.idempotencyKey != null) {
+              print("Money is sent successfully: Huraaaay!!");
+              if (context.mounted) {
                 context.pop();
               }
             }
@@ -147,19 +153,11 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
     final formState = ref.watch(sendMoneyProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Send Money'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Send Money'), elevation: 0),
       body: userAsync.when(
         data: (user) => user == null
             ? Center(child: Text('User profile not found'))
-            : _buildSendForm(
-                context,
-                user,
-                recipientLookupAsync,
-                formState,
-              ),
+            : _buildSendForm(context, user, recipientLookupAsync, formState),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
       ),
@@ -189,9 +187,14 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
               decoration: InputDecoration(
                 hintText: '1234567890',
                 labelText: 'NIBSS Account (10 digits)',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 counterText: '',
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 errorText: _recipientLookupError,
               ),
             ),
@@ -230,11 +233,15 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Recipient', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const Text(
+                      'Recipient',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       recipientLookupAsync.value?.fullName ?? '',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                      style: Theme.of(context).textTheme.bodyLarge
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -261,9 +268,14 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
             decoration: InputDecoration(
               hintText: '0.00',
               labelText: 'Amount (₦)',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               prefixText: '₦ ',
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               errorText: _amountError,
             ),
           ),
@@ -276,7 +288,11 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Available Balance'),
-              Text(user.formattedBalance, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                user.formattedBalance,
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ),
@@ -298,7 +314,10 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
             border: Border.all(color: Colors.red.shade300),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(formState.error ?? '', style: TextStyle(color: Colors.red.shade700)),
+          child: Text(
+            formState.error ?? '',
+            style: TextStyle(color: Colors.red.shade700),
+          ),
         ),
       ),
     );
@@ -312,9 +331,15 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
         label: 'Confirm and send money button',
         child: ElevatedButton(
           onPressed: formState.isLoading ? null : _handleConfirmSend,
-          style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
+          ),
           child: formState.isLoading
-              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
               : const Text('Confirm & Send'),
         ),
       ),

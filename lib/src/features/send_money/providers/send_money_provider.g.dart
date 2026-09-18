@@ -207,7 +207,7 @@ final class SendMoneyProvider
   }
 }
 
-String _$sendMoneyHash() => r'30c89bb89cd01f86eccd68b69dacc904a505854d';
+String _$sendMoneyHash() => r'23479d6ab02b5c580aee377954b43b2d9811a94f';
 
 /// Riverpod provider for SendMoney form state machine
 

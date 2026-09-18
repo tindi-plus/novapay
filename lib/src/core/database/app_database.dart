@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/rendering.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,7 +14,9 @@ part 'app_database.g.dart';
 /// - A pending action queue (for offline-first sync to backend)
 /// - Local cached transaction history (ledger) - used for sync queue management
 /// - Recent transaction history (user-facing) - cached from Firestore for offline viewing
-@DriftDatabase(tables: [PendingQueueItems, LocalTransactions, RecentTransactions])
+@DriftDatabase(
+  tables: [PendingQueueItems, LocalTransactions, RecentTransactions],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -22,6 +25,7 @@ class AppDatabase extends _$AppDatabase {
   /// This uses the application documents directory on mobile/desktop
   /// and appropriate storage on web.
   static DatabaseConnection _openConnection() {
+    debugPrint("Drift database connection is created!!..");
     return driftDatabase(name: 'nova_pay');
   }
 
@@ -56,9 +60,7 @@ class AppDatabase extends _$AppDatabase {
     required String status,
     String? errorMessage,
   }) async {
-    await (update(pendingQueueItems)
-          ..where((tbl) => tbl.id.equals(id)))
-        .write(
+    await (update(pendingQueueItems)..where((tbl) => tbl.id.equals(id))).write(
       PendingQueueItemsCompanion(
         status: Value(status),
         // Could add error field if table is extended later
@@ -122,22 +124,23 @@ class AppDatabase extends _$AppDatabase {
 
   /// Watches all local transactions ordered by date (newest first).
   Stream<List<LocalTransaction>> watchLocalTransactions() {
-    return (select(localTransactions)
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .watch();
+    return (select(
+      localTransactions,
+    )..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
   }
 
   /// Gets a specific transaction by ID.
   Future<LocalTransaction?> getLocalTransactionById(String id) {
-    return (select(localTransactions)..where((tbl) => tbl.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      localTransactions,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
   }
 
   /// Deletes old transactions (for cache management).
   Future<void> deleteOldTransactions(DateTime olderThan) async {
-    await (delete(localTransactions)
-          ..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan)))
-        .go();
+    await (delete(
+      localTransactions,
+    )..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan))).go();
   }
 
   /// --- RecentTransactions (User-Facing History) ---
@@ -169,23 +172,24 @@ class AppDatabase extends _$AppDatabase {
   /// Watches all recent transactions ordered by date (newest first).
   /// Returns a stream for real-time UI updates.
   Stream<List<RecentTransaction>> watchRecentTransactions() {
-    return (select(recentTransactions)
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .watch();
+    return (select(
+      recentTransactions,
+    )..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
   }
 
   /// Gets a specific recent transaction by ID.
   Future<RecentTransaction?> getRecentTransactionById(String id) {
-    return (select(recentTransactions)..where((tbl) => tbl.id.equals(id)))
-        .getSingleOrNull();
+    return (select(
+      recentTransactions,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
   }
 
   /// Deletes old recent transactions (for cache management).
   /// Keeps only recent transactions to avoid bloating the database.
   Future<void> deleteOldRecentTransactions(DateTime olderThan) async {
-    await (delete(recentTransactions)
-          ..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan)))
-        .go();
+    await (delete(
+      recentTransactions,
+    )..where((tbl) => tbl.createdAt.isSmallerThanValue(olderThan))).go();
   }
 
   /// Clears all recent transactions (full cache reset).
@@ -198,10 +202,19 @@ class AppDatabase extends _$AppDatabase {
 /// Riverpod provider for the AppDatabase instance using code generation.
 ///
 /// The database is automatically closed when the provider is disposed.
-@riverpod
+/// Riverpod provider for the AppDatabase instance using code generation.
+///
+/// keepAlive: true ensures that the database is only created once and
+/// persists across screen changes, page transitions, and hot restarts.
+@Riverpod(keepAlive: true)
 AppDatabase database(Ref ref) {
   final database = AppDatabase();
-  ref.onDispose(() => database.close());
+
+  // Note: Since keepAlive is true, this will only run if the entire
+  // ProviderContainer is wiped out (e.g. app shutdown).
+  ref.onDispose(() async {
+    await database.close();
+  });
+
   return database;
 }
-

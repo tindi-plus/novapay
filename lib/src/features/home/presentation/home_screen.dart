@@ -16,7 +16,7 @@ class HomeScreen extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProfileStreamProvider);
     final authController = ref.read(authControllerProvider.notifier);
     ref.watch(syncEngineProvider);
-
+    print("Home screen is active now.....!!!!!.......!!!!");
     return Scaffold(
       appBar: AppBar(
         title: const Text('NovaPay'),

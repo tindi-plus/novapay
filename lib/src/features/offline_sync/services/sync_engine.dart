@@ -15,14 +15,27 @@ part 'sync_engine.g.dart';
 /// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
 @riverpod
 class SyncNotification extends _$SyncNotification {
+  Timer? _dismissTimer;
+
   @override
-  String? build() => null;
+  String? build() {
+    // Clean up any pending timers when the provider is disposed
+    ref.onDispose(() {
+      _dismissTimer?.cancel();
+    });
+    return null;
+  }
 
   void show(String message) {
+    // Cancel any existing timer
+    _dismissTimer?.cancel();
+    
     state = message;
+    
     // Auto-dismiss non-blocking after 4 seconds
-    Timer(const Duration(seconds: 4), () {
-      if (state == message) {
+    _dismissTimer = Timer(const Duration(seconds: 4), () {
+      // Check if the provider is still mounted before accessing state
+      if (ref.mounted && state == message) {
         state = null;
       }
     });
@@ -109,17 +122,23 @@ class SyncEngine {
           if (result.data != null && result.data['success'] == true) {
             await _queueService.updateItemStatus(item.id, TransactionStatus.success);
             await _queueService.deleteQueuedItem(item.id);
-            ref.read(syncNotificationProvider.notifier).show(
-              'Transaction completed successfully.',
-            );
+            // Only show notification if the sync engine ref is still mounted
+            if (ref.mounted) {
+              ref.read(syncNotificationProvider.notifier).show(
+                'Transaction completed successfully.',
+              );
+            }
           } else {
             throw Exception(result.data?['message'] ?? 'Remote processing failed');
           }
         } catch (e) {
           await _queueService.updateItemStatus(item.id, TransactionStatus.failed);
-          ref.read(syncNotificationProvider.notifier).show(
-            'Transaction failed. Please check details.',
-          );
+          // Only show notification if the sync engine ref is still mounted
+          if (ref.mounted) {
+            ref.read(syncNotificationProvider.notifier).show(
+              'Transaction failed. Please check details.',
+            );
+          }
           if (kDebugMode) {
             print('Replay failed for ${item.id}: $e');
           }
@@ -129,9 +148,12 @@ class SyncEngine {
       if (kDebugMode) {
         print('Sync engine error: $e');
       }
-      ref.read(syncNotificationProvider.notifier).show(
-        'Sync error occurred. Check pending transactions.',
-      );
+      // Only show notification if the sync engine ref is still mounted
+      if (ref.mounted) {
+        ref.read(syncNotificationProvider.notifier).show(
+          'Sync error occurred. Check pending transactions.',
+        );
+      }
     } finally {
       _isSyncing = false;
     }

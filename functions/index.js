@@ -16,13 +16,15 @@
 //  * All amounts in positive integer Kobo. Uses Firestore transaction for atomicity + idempotency.
 //  */
 // exports.processSendMoney = onCall(async (request) => {
-//   const { idempotencyKey, senderId, recipientId, amountInKobo, txId, note = "" } = request.data || {};
+//   const { idempotencyKey, senderId, recipientId,
+// amountInKobo, txId, note = "" } = request.data || {};
 
 //   if (!request.auth) {
 //     throw new HttpsError("unauthenticated", "Must be authenticated to send money.");
 //   }
 //   if (!idempotencyKey || !senderId || !recipientId || !amountInKobo || !txId) {
-//     throw new HttpsError("invalid-argument", "Missing required fields: idempotencyKey, senderId, recipientId, amountInKobo, txId");
+//     throw new HttpsError("invalid-argument",
+// "Missing required fields: idempotencyKey, senderId, recipientId, amountInKobo, txId");
 //   }
 //   if (typeof amountInKobo !== "number" || amountInKobo <= 0 || !Number.isInteger(amountInKobo)) {
 //     throw new HttpsError("invalid-argument", "amountInKobo must be a positive integer (Kobo)");
@@ -180,7 +182,8 @@
 //     throw new HttpsError("unauthenticated", "Must be authenticated to contribute to savings.");
 //   }
 //   if (!idempotencyKey || !userId || !goalId || !amountInKobo || !txId) {
-//     throw new HttpsError("invalid-argument", "Missing required fields: idempotencyKey, userId, goalId, amountInKobo, txId");
+//     throw new HttpsError("invalid-argument",
+// "Missing required fields: idempotencyKey, userId, goalId, amountInKobo, txId");
 //   }
 //   if (typeof amountInKobo !== "number" || amountInKobo <= 0 || !Number.isInteger(amountInKobo)) {
 //     throw new HttpsError("invalid-argument", "amountInKobo must be a positive integer (Kobo)");
@@ -367,7 +370,7 @@ exports.processSendMoney = onCall(async (request) => {
       throw new HttpsError("not-found", "Recipient account not found");
     }
 
-    const senderBalance = senderDoc.data().balanceInKobo || 0;
+    const senderBalance = senderDoc.data().walletBalanceInKobo || 0;
     if (senderBalance < amountInKobo) {
       throw new HttpsError("failed-precondition", "Insufficient funds");
     }
@@ -396,11 +399,11 @@ exports.processSendMoney = onCall(async (request) => {
     });
 
     transaction.update(senderRef, {
-      balanceInKobo: FieldValue.increment(-amountInKobo),
+      walletBalanceInKobo: FieldValue.increment(-amountInKobo),
     });
 
     transaction.update(recipientRef, {
-      balanceInKobo: FieldValue.increment(amountInKobo),
+      walletBalanceInKobo: FieldValue.increment(amountInKobo),
     });
 
     const responsePayload = {
