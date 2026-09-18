@@ -2105,6 +2105,10 @@ class $AppDatabaseManager {
 /// Riverpod provider for the AppDatabase instance using code generation.
 ///
 /// The database is automatically closed when the provider is disposed.
+/// Riverpod provider for the AppDatabase instance using code generation.
+///
+/// keepAlive: true ensures that the database is only created once and
+/// persists across screen changes, page transitions, and hot restarts.
 
 @ProviderFor(database)
 final databaseProvider = DatabaseProvider._();
@@ -2112,6 +2116,10 @@ final databaseProvider = DatabaseProvider._();
 /// Riverpod provider for the AppDatabase instance using code generation.
 ///
 /// The database is automatically closed when the provider is disposed.
+/// Riverpod provider for the AppDatabase instance using code generation.
+///
+/// keepAlive: true ensures that the database is only created once and
+/// persists across screen changes, page transitions, and hot restarts.
 
 final class DatabaseProvider
     extends $FunctionalProvider<AppDatabase, AppDatabase, AppDatabase>
@@ -2119,13 +2127,17 @@ final class DatabaseProvider
   /// Riverpod provider for the AppDatabase instance using code generation.
   ///
   /// The database is automatically closed when the provider is disposed.
+  /// Riverpod provider for the AppDatabase instance using code generation.
+  ///
+  /// keepAlive: true ensures that the database is only created once and
+  /// persists across screen changes, page transitions, and hot restarts.
   DatabaseProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'databaseProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -2152,4 +2164,4 @@ final class DatabaseProvider
   }
 }
 
-String _$databaseHash() => r'4180658d74071ab910aae9355909e3f564724857';
+String _$databaseHash() => r'f862f3bf360bcbc54d6f70e90aed473cb726296e';

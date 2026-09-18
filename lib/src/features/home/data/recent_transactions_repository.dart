@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../common/models/transaction_model.dart';
@@ -20,15 +21,14 @@ class RecentTransactionsRepository {
 
   /// Returns a stream of recent transactions from Drift (cached).
   /// The cache is automatically kept in sync with Firestore by FirestoreSyncService.
-  Stream<List<TransactionModel>> watchRecentTransactions() {
-    // Ensure the Firestore sync listener is active
-    // This keeps the Drift cache in sync with Firestore
-    ref.watch(firestoreSyncServiceProvider);
-
-    // Get current user state
-    final authState = ref.watch(authStateProvider);
-    final database = ref.watch(databaseProvider);
-
+  /// 
+  /// NOTE: This method does not watch providers. All provider watching is done
+  /// at the Riverpod provider level to prevent re-evaluation cycles that cause
+  /// multiple database instances.
+  Stream<List<TransactionModel>> watchRecentTransactions({
+    required AppDatabase database,
+    required AsyncValue<User?> authState,
+  }) {
     // If no authenticated user, return empty stream
     if (authState.value == null) {
       return Stream.value([]);
@@ -73,8 +73,25 @@ RecentTransactionsRepository recentTransactionsRepository(Ref ref) {
 
 /// StreamProvider that exposes recent transactions to the UI.
 /// Automatically watches Drift cache and Firestore updates.
+/// 
+/// IMPORTANT: All provider watching is done here at the Riverpod provider level
+/// to ensure proper dependency tracking and prevent multiple database instances.
 @riverpod
 Stream<List<TransactionModel>> recentTransactionsProvider(Ref ref) {
+  // Watch all dependencies FIRST, at the provider level
+  // This ensures Riverpod's caching and dependency tracking works correctly
   final repository = ref.watch(recentTransactionsRepositoryProvider);
-  return repository.watchRecentTransactions();
+  final authState = ref.watch(authStateProvider);
+  final database = ref.watch(databaseProvider);
+  
+  // Ensure Firestore sync listener is active (important for cache sync)
+  // This watches the provider, ensuring the listener is set up
+  ref.watch(firestoreSyncServiceProvider);
+
+  // Now call the repository method with dependencies as parameters
+  // No additional ref.watch() calls happen inside the method
+  return repository.watchRecentTransactions(
+    database: database,
+    authState: authState,
+  );
 }

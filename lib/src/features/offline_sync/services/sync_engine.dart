@@ -12,7 +12,7 @@ import 'offline_queue_service.dart';
 
 part 'sync_engine.g.dart';
 /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
-/// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
+/// Listened to by UI layers (e.g. in SyncNotificationOverlay) to show messages.
 @riverpod
 class SyncNotification extends _$SyncNotification {
   Timer? _dismissTimer;
@@ -26,14 +26,22 @@ class SyncNotification extends _$SyncNotification {
     return null;
   }
 
+  /// Display a notification message that auto-dismisses after 4 seconds
   void show(String message) {
+    // Empty string means dismiss the notification
+    if (message.isEmpty) {
+      _dismissTimer?.cancel();
+      state = null;
+      return;
+    }
+
     // Cancel any existing timer
     _dismissTimer?.cancel();
     
     state = message;
     
     // Auto-dismiss non-blocking after 4 seconds
-    _dismissTimer = Timer(const Duration(seconds: 4), () {
+    _dismissTimer = Timer(const Duration(seconds: 5), () {
       // Check if the provider is still mounted before accessing state
       if (ref.mounted && state == message) {
         state = null;

@@ -47,7 +47,7 @@ final class SyncNotificationProvider
   }
 }
 
-String _$syncNotificationHash() => r'dfce1d9770d8a7403ae60a8cb0bdf3d900b9b227';
+String _$syncNotificationHash() => r'ae2db031b490f3cfcb3887a0d7fb4fb35b4a086f';
 
 /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
 /// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.

@@ -11,6 +11,10 @@ part of 'firestore_sync_service.dart';
 /// Provider for FirestoreSyncService.
 /// This provider manages the lifecycle of Firestore listeners.
 /// When the provider is disposed, all listeners are automatically cancelled.
+///
+/// IMPORTANT: All ref.watch() calls are done at this provider level (not inside the service),
+/// so that Riverpod correctly tracks dependencies and caches the database instance.
+/// This prevents multiple AppDatabase instances from being created.
 
 @ProviderFor(firestoreSyncService)
 final firestoreSyncServiceProvider = FirestoreSyncServiceProvider._();
@@ -18,6 +22,10 @@ final firestoreSyncServiceProvider = FirestoreSyncServiceProvider._();
 /// Provider for FirestoreSyncService.
 /// This provider manages the lifecycle of Firestore listeners.
 /// When the provider is disposed, all listeners are automatically cancelled.
+///
+/// IMPORTANT: All ref.watch() calls are done at this provider level (not inside the service),
+/// so that Riverpod correctly tracks dependencies and caches the database instance.
+/// This prevents multiple AppDatabase instances from being created.
 
 final class FirestoreSyncServiceProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
@@ -25,6 +33,10 @@ final class FirestoreSyncServiceProvider
   /// Provider for FirestoreSyncService.
   /// This provider manages the lifecycle of Firestore listeners.
   /// When the provider is disposed, all listeners are automatically cancelled.
+  ///
+  /// IMPORTANT: All ref.watch() calls are done at this provider level (not inside the service),
+  /// so that Riverpod correctly tracks dependencies and caches the database instance.
+  /// This prevents multiple AppDatabase instances from being created.
   FirestoreSyncServiceProvider._()
     : super(
         from: null,
@@ -51,4 +63,4 @@ final class FirestoreSyncServiceProvider
 }
 
 String _$firestoreSyncServiceHash() =>
-    r'9e5586da9c8ef1af5a92f3c0fcd4db88df5a4a68';
+    r'd801fcfa5866ed5eebcbbb61d7a48d70b68aecad';

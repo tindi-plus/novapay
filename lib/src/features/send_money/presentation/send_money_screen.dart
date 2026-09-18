@@ -46,43 +46,30 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
   }
 
   void _handleRecipientSearch(String value) {
+    // Force rebuild on input so the provider re-evaluates automatically
     setState(() {
       _recipientLookupError = null;
     });
   }
 
   void _handleAmountChange(String value) {
-    setState(() {
-      _amountError = null;
-    });
+    if (_amountError != null) {
+      setState(() {
+        _amountError = null;
+      });
+    }
 
-    // Update controller state with parsed amount
     final amountInKobo = _parseAmountToKobo(value);
     if (amountInKobo != null) {
       ref.read(sendMoneyProvider.notifier).setAmountKobo(amountInKobo);
     }
   }
 
-  Future<void> _handleConfirmSend() async {
-    final accountNumber = _accountNumberController.text.trim();
+  Future<void> _handleConfirmSend(RecipientModel recipient) async {
+    _accountNumberController.text.trim();
     final amountInput = _amountController.text.trim();
 
-    // Validate recipient
-    if (accountNumber.isEmpty) {
-      setState(() {
-        _recipientLookupError = 'Please enter recipient account number';
-      });
-      return;
-    }
-
-    if (accountNumber.length != 10) {
-      setState(() {
-        _recipientLookupError = 'Account number must be 10 digits';
-      });
-      return;
-    }
-
-    // Validate amount
+    // Validate amount input
     final amountInKobo = _parseAmountToKobo(amountInput);
     if (amountInKobo == null) {
       setState(() {
@@ -91,64 +78,51 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
       return;
     }
 
-    // Get recipient from the lookup provider
-    final recipient = ref
-        .read(
-          recipientLookupProvider(
-            accountNumber: _accountNumberController.text.trim(),
-          ),
-        )
-        .requireValue;
+    if (!mounted) return;
 
-    if (recipient == null) {
-      setState(() {
-        _recipientLookupError =
-            'Recipient not found. Please verify account number';
-      });
-      return;
-    }
+    // Capture navigator & router before starting async operations
+    final navigator = Navigator.of(context);
+    final router = GoRouter.of(context);
 
-    // Show confirmation modal
-    if (mounted) {
-      showModalBottomSheet<void>(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => SendConfirmationModal(
-          recipient: recipient,
-          amountInKobo: amountInKobo,
-          onConfirm: () async {
-            // Pop modal
-            Navigator.of(context).pop();
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (modalContext) => SendConfirmationModal(
+        recipient: recipient,
+        amountInKobo: amountInKobo,
+        onConfirm: () async {
+          // Dismiss modal sheet using local modal Context
+          Navigator.of(modalContext).pop();
 
-            // Process transaction
-            await ref
-                .read(sendMoneyProvider.notifier)
-                .processSendMoney(
-                  recipient: recipient,
-                  amountInKobo: amountInKobo,
-                );
+          // Process transaction
+          await ref
+              .read(sendMoneyProvider.notifier)
+              .processSendMoney(
+                recipient: recipient,
+                amountInKobo: amountInKobo,
+              );
 
-            // Check if success (pop to previous screen)
-            final finalState = ref.read(sendMoneyProvider);
-            if (finalState.error == null && finalState.idempotencyKey != null) {
-              print("Money is sent successfully: Huraaaay!!");
-              if (context.mounted) {
-                context.pop();
-              }
+          // Pop current screen regardless of context mounting dynamics
+          final finalState = ref.read(sendMoneyProvider);
+          if (finalState.error == null && finalState.idempotencyKey != null) {
+            if (mounted) {
+              router.pop();
+            } else if (navigator.canPop()) {
+              navigator.pop();
             }
-          },
-        ),
-      );
-    }
+          }
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(currentUserProfileStreamProvider);
+
+    final accountNumber = _accountNumberController.text.trim();
     final recipientLookupAsync = ref.watch(
-      recipientLookupProvider(
-        accountNumber: _accountNumberController.text.trim(),
-      ),
+      recipientLookupProvider(accountNumber: accountNumber),
     );
     final formState = ref.watch(sendMoneyProvider);
 
@@ -156,7 +130,7 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
       appBar: AppBar(title: const Text('Send Money'), elevation: 0),
       body: userAsync.when(
         data: (user) => user == null
-            ? Center(child: Text('User profile not found'))
+            ? const Center(child: Text('User profile not found'))
             : _buildSendForm(context, user, recipientLookupAsync, formState),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -170,6 +144,18 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
     AsyncValue<RecipientModel?> recipientLookupAsync,
     SendMoneyFormState formState,
   ) {
+    final accountNumber = _accountNumberController.text.trim();
+    final RecipientModel? recipient = recipientLookupAsync.value;
+
+    // Determine inline recipient search error
+    String? currentRecipientError = _recipientLookupError;
+    if (accountNumber.length == 10 &&
+        !recipientLookupAsync.isLoading &&
+        recipient == null) {
+      currentRecipientError =
+          'Recipient not found. Please verify account number';
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -195,7 +181,7 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
                   horizontal: 16,
                   vertical: 16,
                 ),
-                errorText: _recipientLookupError,
+                errorText: currentRecipientError,
               ),
             ),
           ),
@@ -205,7 +191,7 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
           _buildAmountSection(context, user),
           const SizedBox(height: 32),
           _buildErrorDisplay(formState),
-          _buildConfirmButton(formState),
+          _buildConfirmButton(formState, recipient),
         ],
       ),
     );
@@ -215,41 +201,49 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
     BuildContext context,
     AsyncValue<RecipientModel?> recipientLookupAsync,
   ) {
-    if (recipientLookupAsync.value == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Semantics(
-      label: 'Recipient name: ${recipientLookupAsync.value?.fullName}',
-      readOnly: true,
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const Icon(Icons.account_circle, size: 40),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Recipient',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+    return recipientLookupAsync.when(
+      data: (recipient) {
+        if (recipient == null) return const SizedBox.shrink();
+        return Semantics(
+          label: 'Recipient name: ${recipient.fullName}',
+          readOnly: true,
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  const Icon(Icons.account_circle, size: 40),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Recipient',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          recipient.fullName,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      recipientLookupAsync.value?.fullName ?? '',
-                      style: Theme.of(context).textTheme.bodyLarge
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
+      loading: () => _accountNumberController.text.trim().length == 10
+          ? const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: LinearProgressIndicator(),
+            )
+          : const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 
@@ -315,7 +309,7 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            formState.error ?? '',
+            formState.error!,
             style: TextStyle(color: Colors.red.shade700),
           ),
         ),
@@ -323,14 +317,20 @@ class _SendMoneyScreenState extends ConsumerState<SendMoneyScreen> {
     );
   }
 
-  Widget _buildConfirmButton(SendMoneyFormState formState) {
+  Widget _buildConfirmButton(
+    SendMoneyFormState formState,
+    RecipientModel? recipient,
+  ) {
+    // Button is disabled when form is loading OR recipient is null
+    final bool isEnabled = !formState.isLoading && recipient != null;
+
     return SizedBox(
       width: double.infinity,
       child: Semantics(
         button: true,
         label: 'Confirm and send money button',
         child: ElevatedButton(
-          onPressed: formState.isLoading ? null : _handleConfirmSend,
+          onPressed: isEnabled ? () => _handleConfirmSend(recipient) : null,
           style: ElevatedButton.styleFrom(
             minimumSize: const Size(double.infinity, 48),
           ),
