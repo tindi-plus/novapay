@@ -94,34 +94,48 @@ class _CreateGoalModalState extends ConsumerState<CreateGoalModal> {
                     validator: (v) => _kobo(v ?? '') <= 0 ? 'Valid amount' : null,
                   ),
                   SizedBox(height: 16 * scale),
-                  GestureDetector(
-                    onTap: () async {
-                      final p = await showDatePicker(
-                        context: context,
-                        initialDate: _date ?? DateTime.now().add(const Duration(days: 30)),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 3650)),
-                      );
-                      if (p != null) setState(() => _date = p);
-                    },
-                    child: Container(
-                      height: 48 * scale,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(_date == null ? 'Select Date' : DateFormat('MMM dd, yyyy').format(_date!)),
-                            Icon(Icons.calendar_today),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                GestureDetector(
+  onTap: () async {
+    final p = await showDatePicker(
+      context: context,
+      initialDate: _date ?? DateTime.now().add(const Duration(days: 30)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 3650)),
+    );
+    if (p != null) setState(() => _date = p);
+  },
+  child: InputDecorator(
+    // "Target Date" label
+    decoration: InputDecoration(
+      labelText: 'Target Date',
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+    ),
+    child: Container(
+      height: 48 * scale,
+      alignment: Alignment.center, // Aligns the text and icon vertically
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            _date == null
+                ? 'Select Date'
+                : DateFormat('MMM dd, yyyy').format(_date!),
+          ),
+          const Icon(Icons.calendar_today),
+        ],
+      ),
+    ),
+  ),
+)
+
                 ],
               ),
             ),

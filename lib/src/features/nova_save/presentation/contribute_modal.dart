@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../authentication/providers/auth_providers.dart';
 import '../domain/savings_goal_model.dart';
@@ -50,7 +51,6 @@ class _ContributeModalState extends ConsumerState<ContributeModal> {
       final kobo = _kobo(_amt.text);
       final user = await ref.read(currentUserProfileProvider.future);
       if (user == null || kobo > user.walletBalanceInKobo) {
-        print('User current balance: ${user}');
         throw Exception('Insufficient balance');
       }
       await ref
@@ -105,8 +105,16 @@ class _ContributeModalState extends ConsumerState<ContributeModal> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Target'),
+                      Text('Target Amount'),
                       Text(widget.goal.formattedTargetNaira),
+                    ],
+                  ),
+                  SizedBox(height: scaled(12)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Target Date'),
+                      Text(DateFormat('DD-MMM-yyyy').format(widget.goal.targetDate)),
                     ],
                   ),
                   SizedBox(height: scaled(16)),

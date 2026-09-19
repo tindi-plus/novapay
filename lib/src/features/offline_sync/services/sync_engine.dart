@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../core/database/app_database.dart';
 import '../../../core/database/tables.dart';
 import '../../../core/providers/firebase_providers.dart';
+import '../../nova_save/domain/savings_goal_model.dart';
 import 'offline_queue_service.dart';
 
 part 'sync_engine.g.dart';
@@ -67,6 +70,8 @@ class SyncEngine {
   late final OfflineQueueService _queueService;
   late final FirebaseFunctions _functions;
   late final Connectivity _connectivity;
+  late final AppDatabase _database;
+  late final FirebaseFirestore _firestore;
 
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isSyncing = false;
@@ -75,6 +80,8 @@ class SyncEngine {
     _queueService = ref.read(offlineQueueServiceProvider);
     _functions = ref.read(firebaseFunctionsProvider);
     _connectivity = Connectivity();
+    _database = ref.read(databaseProvider);
+    _firestore = ref.read(firestoreProvider);
     _initialize();
   }
 
@@ -129,6 +136,12 @@ class SyncEngine {
 
           if (result.data != null && result.data['success'] == true) {
             await _queueService.updateItemStatus(item.id, TransactionStatus.success);
+             
+             // If this was a savings goal contribution, refresh the goal from Firestore
+             if (item.actionType == 'save_contribute') {
+               await _refreshSavingsGoalAfterContribution(item.payloadJson);
+             }
+
             await _queueService.deleteQueuedItem(item.id);
             // Only show notification if the sync engine ref is still mounted
             if (ref.mounted) {
@@ -179,12 +192,62 @@ class SyncEngine {
         throw Exception('Unknown action type: $actionType');
     }
   }
+  /// Fetches the updated savings goal from Firestore after a successful contribution
+  /// and updates the local cache. This ensures the UI sees the updated goal amount.
+  /// 
+  /// Extracts goalId and userId from the transaction payload.
+  Future<void> _refreshSavingsGoalAfterContribution(String payloadJson) async {
+    try {
+      final payload = jsonDecode(payloadJson) as Map<String, dynamic>;
+      final userId = payload['userId'] as String?;
+      final goalId = payload['goalId'] as String?;
+
+      if (userId == null || goalId == null) {
+        if (kDebugMode) {
+          debugPrint('Warning: Could not extract userId or goalId from save_contribute payload');
+        }
+        return;
+      }
+
+      // Fetch the updated goal from Firestore
+      final goalDoc = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('savingsGoals')
+          .doc(goalId)
+          .get();
+
+      if (goalDoc.exists) {
+        final updatedGoal = SavingsGoalModel.fromMap(goalDoc.data()!);
+        await _database.saveSavingsGoal(
+          id: updatedGoal.id,
+          userId: updatedGoal.userId,
+          name: updatedGoal.name,
+          targetAmountInKobo: updatedGoal.targetAmountInKobo,
+          currentAmountInKobo: updatedGoal.currentAmountInKobo,
+          targetDate: updatedGoal.targetDate,
+          createdAt: updatedGoal.createdAt,
+        );
+
+        if (kDebugMode) {
+          debugPrint(
+              'Refreshed savings goal after contribution replay: ${updatedGoal.id}, newAmount: ${updatedGoal.currentAmountInKobo}');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Warning: Could not refresh goal after contribution replay: $e');
+      }
+      // Continue - the Firestore sync listener should pick it up eventually
+    }
+  }
 
   void dispose() {
     _connectivitySubscription?.cancel();
     _connectivitySubscription = null;
   }
 }
+
 
 /// Riverpod provider for the SyncEngine using code generation (keepAlive: true).
 /// Initializes connectivity monitoring on app boot and safely guards against

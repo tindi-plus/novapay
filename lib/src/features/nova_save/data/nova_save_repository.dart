@@ -169,6 +169,40 @@ class NovaSaveRepository {
       if (kDebugMode) {
         debugPrint('Contribution successful via Cloud Function: $goalId');
         debugPrint('Response: ${result.data}');
+
+       // Fetch the updated goal from Firestore to sync the new amount locally
+       try {
+         final goalDoc = await _firestore
+             .collection('users')
+             .doc(userId)
+             .collection('savingsGoals')
+             .doc(goalId)
+             .get();
+
+         if (goalDoc.exists) {
+           final updatedGoal = SavingsGoalModel.fromMap(goalDoc.data()!);
+           await _database.saveSavingsGoal(
+             id: updatedGoal.id,
+             userId: updatedGoal.userId,
+             name: updatedGoal.name,
+             targetAmountInKobo: updatedGoal.targetAmountInKobo,
+             currentAmountInKobo: updatedGoal.currentAmountInKobo,
+             targetDate: updatedGoal.targetDate,
+             createdAt: updatedGoal.createdAt,
+           );
+
+           if (kDebugMode) {
+             debugPrint(
+                 'Updated goal cache after contribution: ${updatedGoal.id}, newAmount: ${updatedGoal.currentAmountInKobo}');
+           }
+         }
+       } catch (e) {
+         if (kDebugMode) {
+           debugPrint('Warning: Could not fetch updated goal from Firestore: $e');
+         }
+         // Continue - the sync listener should pick it up eventually
+       }
+
       }
     } on FirebaseFunctionsException catch (e) {
       if (kDebugMode) {

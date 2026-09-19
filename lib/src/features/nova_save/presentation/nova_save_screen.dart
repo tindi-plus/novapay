@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../domain/savings_goal_model.dart';
 import '../providers/nova_save_provider.dart';
@@ -223,7 +224,14 @@ class NovaSaveScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(height: scaled(12)),
+              // SizedBox(height: scaled(12)),
+              Semantics(
+                label: 'Target date for this goal.',
+                button: false,
+                readOnly: true,
+                child: Text(DateFormat('DD-MMM-yyyy').format(goal.targetDate)),
+              ),
+              SizedBox(width: scaled(12)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

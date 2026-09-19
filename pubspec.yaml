@@ -61,7 +61,7 @@ dependencies:
   sqlite3_flutter_libs: ^0.6.0+eol
 
   # Utils
-  intl: ^0.20.0
+  intl: ^0.20.3
   drift_flutter: ^0.3.1
   connectivity_plus: ^7.3.1
   uuid: ^4.6.0
