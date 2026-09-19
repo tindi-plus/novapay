@@ -6,6 +6,7 @@ import '../../../common/models/user_model.dart';
 import '../../../router/app_router.dart';
 import '../../authentication/providers/auth_providers.dart';
 import '../../offline_sync/services/sync_engine.dart';
+import '../../nova_save/providers/nova_save_provider.dart';
 import '../data/recent_transactions_repository.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -16,7 +17,6 @@ class HomeScreen extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProfileStreamProvider);
     final authController = ref.read(authControllerProvider.notifier);
     ref.watch(syncEngineProvider);
-    print("Home screen is active now.....!!!!!.......!!!!");
     return Scaffold(
       appBar: AppBar(
         title: const Text('NovaPay'),
@@ -98,10 +98,140 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             _buildNavActions(context),
             const SizedBox(height: 32),
+            _buildNovaSaveSummaryCard(context, ref),
+            const SizedBox(height: 32),
             _buildTransactionSection(context, ref),
           ],
         ),
       ),
+    );
+  }
+
+  /// Builds a dynamic Nova Save summary card showing total goals and saved amount
+  Widget _buildNovaSaveSummaryCard(BuildContext context, WidgetRef ref) {
+    final goalsAsync = ref.watch(savingsGoalsStreamProvider);
+    final totalSavedAsync = ref.watch(totalSavedKoboProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            'Nova Save',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+        ),
+        const SizedBox(height: 12),
+        goalsAsync.when(
+          data: (goals) {
+            return totalSavedAsync.when(
+              data: (totalKobo) {
+                final naira = totalKobo / 100.0;
+                final formattedAmount = _formatNairaForDisplay(naira);
+
+                return Semantics(
+                  label:
+                      'Nova Save: ${goals.length} active goals, $formattedAmount total saved',
+                  child: Card(
+                    child: InkWell(
+                      onTap: () => context.push(savePath),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${goals.length} Active Goals',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Saved: $formattedAmount',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+              loading: () => Semantics(
+                label: 'Loading Nova Save summary',
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SizedBox(
+                      height: 60,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              error: (e, st) => Semantics(
+                label: 'Error loading Nova Save summary',
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('Error loading Nova Save', style: TextStyle(color: Colors.red)),
+                  ),
+                ),
+              ),
+            );
+          },
+          loading: () => Semantics(
+            label: 'Loading Nova Save summary',
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  height: 60,
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          error: (e, st) => Semantics(
+            label: 'Error loading Nova Save summary',
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Error loading Nova Save', style: TextStyle(color: Colors.red)),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -271,5 +401,27 @@ class HomeScreen extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Formats Kobo amount to Naira string with currency symbol for display
+  String _formatNairaForDisplay(double naira) {
+    if (naira == 0) return '₦0.00';
+    
+    String formatted = naira.toStringAsFixed(2);
+    // Add thousand separators
+    final parts = formatted.split('.');
+    final integerPart = parts[0];
+    final decimalPart = parts[1];
+    
+    // Add commas to integer part
+    final buffer = StringBuffer();
+    for (int i = 0; i < integerPart.length; i++) {
+      if (i > 0 && (integerPart.length - i) % 3 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(integerPart[i]);
+    }
+    
+    return '₦${buffer.toString()}.$decimalPart';
   }
 }

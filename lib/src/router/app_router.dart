@@ -7,7 +7,7 @@ import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/signup_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/send_money/presentation/send_money_screen.dart';
-import '../features/savings/presentation/savings_screen.dart';
+import '../features/nova_save/presentation/nova_save_screen.dart';
 import '../features/authentication/providers/auth_providers.dart';
 
 
@@ -110,7 +110,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Nova Save route
       GoRoute(
         path: savePath,
-        builder: (context, state) => const SavingsScreen(),
+        builder: (context, state) => const NovaSaveScreen(),
       ),
     ],
   );

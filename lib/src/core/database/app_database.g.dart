@@ -1308,6 +1308,498 @@ class RecentTransactionsCompanion extends UpdateCompanion<RecentTransaction> {
   }
 }
 
+class $LocalSavingsGoalsTable extends LocalSavingsGoals
+    with TableInfo<$LocalSavingsGoalsTable, LocalSavingsGoal> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalSavingsGoalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _targetAmountInKoboMeta =
+      const VerificationMeta('targetAmountInKobo');
+  @override
+  late final GeneratedColumn<BigInt> targetAmountInKobo =
+      GeneratedColumn<BigInt>(
+        'target_amount_in_kobo',
+        aliasedName,
+        false,
+        type: DriftSqlType.bigInt,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _currentAmountInKoboMeta =
+      const VerificationMeta('currentAmountInKobo');
+  @override
+  late final GeneratedColumn<BigInt> currentAmountInKobo =
+      GeneratedColumn<BigInt>(
+        'current_amount_in_kobo',
+        aliasedName,
+        false,
+        type: DriftSqlType.bigInt,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _targetDateMeta = const VerificationMeta(
+    'targetDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> targetDate = GeneratedColumn<DateTime>(
+    'target_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    name,
+    targetAmountInKobo,
+    currentAmountInKobo,
+    targetDate,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_savings_goals';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalSavingsGoal> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('target_amount_in_kobo')) {
+      context.handle(
+        _targetAmountInKoboMeta,
+        targetAmountInKobo.isAcceptableOrUnknown(
+          data['target_amount_in_kobo']!,
+          _targetAmountInKoboMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetAmountInKoboMeta);
+    }
+    if (data.containsKey('current_amount_in_kobo')) {
+      context.handle(
+        _currentAmountInKoboMeta,
+        currentAmountInKobo.isAcceptableOrUnknown(
+          data['current_amount_in_kobo']!,
+          _currentAmountInKoboMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currentAmountInKoboMeta);
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+        _targetDateMeta,
+        targetDate.isAcceptableOrUnknown(data['target_date']!, _targetDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_targetDateMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalSavingsGoal map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalSavingsGoal(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      targetAmountInKobo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}target_amount_in_kobo'],
+      )!,
+      currentAmountInKobo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}current_amount_in_kobo'],
+      )!,
+      targetDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}target_date'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LocalSavingsGoalsTable createAlias(String alias) {
+    return $LocalSavingsGoalsTable(attachedDatabase, alias);
+  }
+}
+
+class LocalSavingsGoal extends DataClass
+    implements Insertable<LocalSavingsGoal> {
+  /// Unique identifier for the savings goal (Firestore document ID or UUID)
+  final String id;
+
+  /// User ID who owns this savings goal
+  final String userId;
+
+  /// Goal name (e.g., "Emergency Fund", "Vacation Fund")
+  final String name;
+
+  /// Target amount stored in kobo (64-bit int, e.g., 5000000 = ₦50,000.00)
+  final BigInt targetAmountInKobo;
+
+  /// Current saved amount in kobo (64-bit int, e.g., 1250000 = ₦12,500.00)
+  final BigInt currentAmountInKobo;
+
+  /// Target date for achieving the goal
+  final DateTime targetDate;
+
+  /// When the savings goal was created
+  final DateTime createdAt;
+  const LocalSavingsGoal({
+    required this.id,
+    required this.userId,
+    required this.name,
+    required this.targetAmountInKobo,
+    required this.currentAmountInKobo,
+    required this.targetDate,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
+    map['name'] = Variable<String>(name);
+    map['target_amount_in_kobo'] = Variable<BigInt>(targetAmountInKobo);
+    map['current_amount_in_kobo'] = Variable<BigInt>(currentAmountInKobo);
+    map['target_date'] = Variable<DateTime>(targetDate);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  LocalSavingsGoalsCompanion toCompanion(bool nullToAbsent) {
+    return LocalSavingsGoalsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      name: Value(name),
+      targetAmountInKobo: Value(targetAmountInKobo),
+      currentAmountInKobo: Value(currentAmountInKobo),
+      targetDate: Value(targetDate),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory LocalSavingsGoal.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalSavingsGoal(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
+      name: serializer.fromJson<String>(json['name']),
+      targetAmountInKobo: serializer.fromJson<BigInt>(
+        json['targetAmountInKobo'],
+      ),
+      currentAmountInKobo: serializer.fromJson<BigInt>(
+        json['currentAmountInKobo'],
+      ),
+      targetDate: serializer.fromJson<DateTime>(json['targetDate']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
+      'name': serializer.toJson<String>(name),
+      'targetAmountInKobo': serializer.toJson<BigInt>(targetAmountInKobo),
+      'currentAmountInKobo': serializer.toJson<BigInt>(currentAmountInKobo),
+      'targetDate': serializer.toJson<DateTime>(targetDate),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  LocalSavingsGoal copyWith({
+    String? id,
+    String? userId,
+    String? name,
+    BigInt? targetAmountInKobo,
+    BigInt? currentAmountInKobo,
+    DateTime? targetDate,
+    DateTime? createdAt,
+  }) => LocalSavingsGoal(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    name: name ?? this.name,
+    targetAmountInKobo: targetAmountInKobo ?? this.targetAmountInKobo,
+    currentAmountInKobo: currentAmountInKobo ?? this.currentAmountInKobo,
+    targetDate: targetDate ?? this.targetDate,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  LocalSavingsGoal copyWithCompanion(LocalSavingsGoalsCompanion data) {
+    return LocalSavingsGoal(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      name: data.name.present ? data.name.value : this.name,
+      targetAmountInKobo: data.targetAmountInKobo.present
+          ? data.targetAmountInKobo.value
+          : this.targetAmountInKobo,
+      currentAmountInKobo: data.currentAmountInKobo.present
+          ? data.currentAmountInKobo.value
+          : this.currentAmountInKobo,
+      targetDate: data.targetDate.present
+          ? data.targetDate.value
+          : this.targetDate,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSavingsGoal(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('name: $name, ')
+          ..write('targetAmountInKobo: $targetAmountInKobo, ')
+          ..write('currentAmountInKobo: $currentAmountInKobo, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    name,
+    targetAmountInKobo,
+    currentAmountInKobo,
+    targetDate,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalSavingsGoal &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.name == this.name &&
+          other.targetAmountInKobo == this.targetAmountInKobo &&
+          other.currentAmountInKobo == this.currentAmountInKobo &&
+          other.targetDate == this.targetDate &&
+          other.createdAt == this.createdAt);
+}
+
+class LocalSavingsGoalsCompanion extends UpdateCompanion<LocalSavingsGoal> {
+  final Value<String> id;
+  final Value<String> userId;
+  final Value<String> name;
+  final Value<BigInt> targetAmountInKobo;
+  final Value<BigInt> currentAmountInKobo;
+  final Value<DateTime> targetDate;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const LocalSavingsGoalsCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.targetAmountInKobo = const Value.absent(),
+    this.currentAmountInKobo = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalSavingsGoalsCompanion.insert({
+    required String id,
+    required String userId,
+    required String name,
+    required BigInt targetAmountInKobo,
+    required BigInt currentAmountInKobo,
+    required DateTime targetDate,
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       userId = Value(userId),
+       name = Value(name),
+       targetAmountInKobo = Value(targetAmountInKobo),
+       currentAmountInKobo = Value(currentAmountInKobo),
+       targetDate = Value(targetDate);
+  static Insertable<LocalSavingsGoal> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<String>? name,
+    Expression<BigInt>? targetAmountInKobo,
+    Expression<BigInt>? currentAmountInKobo,
+    Expression<DateTime>? targetDate,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (name != null) 'name': name,
+      if (targetAmountInKobo != null)
+        'target_amount_in_kobo': targetAmountInKobo,
+      if (currentAmountInKobo != null)
+        'current_amount_in_kobo': currentAmountInKobo,
+      if (targetDate != null) 'target_date': targetDate,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalSavingsGoalsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? userId,
+    Value<String>? name,
+    Value<BigInt>? targetAmountInKobo,
+    Value<BigInt>? currentAmountInKobo,
+    Value<DateTime>? targetDate,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return LocalSavingsGoalsCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      targetAmountInKobo: targetAmountInKobo ?? this.targetAmountInKobo,
+      currentAmountInKobo: currentAmountInKobo ?? this.currentAmountInKobo,
+      targetDate: targetDate ?? this.targetDate,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (targetAmountInKobo.present) {
+      map['target_amount_in_kobo'] = Variable<BigInt>(targetAmountInKobo.value);
+    }
+    if (currentAmountInKobo.present) {
+      map['current_amount_in_kobo'] = Variable<BigInt>(
+        currentAmountInKobo.value,
+      );
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<DateTime>(targetDate.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalSavingsGoalsCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('name: $name, ')
+          ..write('targetAmountInKobo: $targetAmountInKobo, ')
+          ..write('currentAmountInKobo: $currentAmountInKobo, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1317,6 +1809,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $LocalTransactionsTable(this);
   late final $RecentTransactionsTable recentTransactions =
       $RecentTransactionsTable(this);
+  late final $LocalSavingsGoalsTable localSavingsGoals =
+      $LocalSavingsGoalsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1325,6 +1819,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     pendingQueueItems,
     localTransactions,
     recentTransactions,
+    localSavingsGoals,
   ];
 }
 
@@ -2084,6 +2579,272 @@ typedef $$RecentTransactionsTableProcessedTableManager =
       RecentTransaction,
       PrefetchHooks Function()
     >;
+typedef $$LocalSavingsGoalsTableCreateCompanionBuilder =
+    LocalSavingsGoalsCompanion Function({
+      required String id,
+      required String userId,
+      required String name,
+      required BigInt targetAmountInKobo,
+      required BigInt currentAmountInKobo,
+      required DateTime targetDate,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$LocalSavingsGoalsTableUpdateCompanionBuilder =
+    LocalSavingsGoalsCompanion Function({
+      Value<String> id,
+      Value<String> userId,
+      Value<String> name,
+      Value<BigInt> targetAmountInKobo,
+      Value<BigInt> currentAmountInKobo,
+      Value<DateTime> targetDate,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$LocalSavingsGoalsTableFilterComposer
+    extends Composer<_$AppDatabase, $LocalSavingsGoalsTable> {
+  $$LocalSavingsGoalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get targetAmountInKobo => $composableBuilder(
+    column: $table.targetAmountInKobo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get currentAmountInKobo => $composableBuilder(
+    column: $table.currentAmountInKobo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$LocalSavingsGoalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $LocalSavingsGoalsTable> {
+  $$LocalSavingsGoalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get targetAmountInKobo => $composableBuilder(
+    column: $table.targetAmountInKobo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get currentAmountInKobo => $composableBuilder(
+    column: $table.currentAmountInKobo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalSavingsGoalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LocalSavingsGoalsTable> {
+  $$LocalSavingsGoalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get targetAmountInKobo => $composableBuilder(
+    column: $table.targetAmountInKobo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<BigInt> get currentAmountInKobo => $composableBuilder(
+    column: $table.currentAmountInKobo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$LocalSavingsGoalsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LocalSavingsGoalsTable,
+          LocalSavingsGoal,
+          $$LocalSavingsGoalsTableFilterComposer,
+          $$LocalSavingsGoalsTableOrderingComposer,
+          $$LocalSavingsGoalsTableAnnotationComposer,
+          $$LocalSavingsGoalsTableCreateCompanionBuilder,
+          $$LocalSavingsGoalsTableUpdateCompanionBuilder,
+          (
+            LocalSavingsGoal,
+            BaseReferences<
+              _$AppDatabase,
+              $LocalSavingsGoalsTable,
+              LocalSavingsGoal
+            >,
+          ),
+          LocalSavingsGoal,
+          PrefetchHooks Function()
+        > {
+  $$LocalSavingsGoalsTableTableManager(
+    _$AppDatabase db,
+    $LocalSavingsGoalsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalSavingsGoalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalSavingsGoalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalSavingsGoalsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<BigInt> targetAmountInKobo = const Value.absent(),
+                Value<BigInt> currentAmountInKobo = const Value.absent(),
+                Value<DateTime> targetDate = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalSavingsGoalsCompanion(
+                id: id,
+                userId: userId,
+                name: name,
+                targetAmountInKobo: targetAmountInKobo,
+                currentAmountInKobo: currentAmountInKobo,
+                targetDate: targetDate,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String userId,
+                required String name,
+                required BigInt targetAmountInKobo,
+                required BigInt currentAmountInKobo,
+                required DateTime targetDate,
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalSavingsGoalsCompanion.insert(
+                id: id,
+                userId: userId,
+                name: name,
+                targetAmountInKobo: targetAmountInKobo,
+                currentAmountInKobo: currentAmountInKobo,
+                targetDate: targetDate,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalSavingsGoalsTable, LocalSavingsGoal>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $LocalSavingsGoalsTable,
+                    LocalSavingsGoal
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$LocalSavingsGoalsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LocalSavingsGoalsTable,
+      LocalSavingsGoal,
+      $$LocalSavingsGoalsTableFilterComposer,
+      $$LocalSavingsGoalsTableOrderingComposer,
+      $$LocalSavingsGoalsTableAnnotationComposer,
+      $$LocalSavingsGoalsTableCreateCompanionBuilder,
+      $$LocalSavingsGoalsTableUpdateCompanionBuilder,
+      (
+        LocalSavingsGoal,
+        BaseReferences<
+          _$AppDatabase,
+          $LocalSavingsGoalsTable,
+          LocalSavingsGoal
+        >,
+      ),
+      LocalSavingsGoal,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2094,6 +2855,8 @@ class $AppDatabaseManager {
       $$LocalTransactionsTableTableManager(_db, _db.localTransactions);
   $$RecentTransactionsTableTableManager get recentTransactions =>
       $$RecentTransactionsTableTableManager(_db, _db.recentTransactions);
+  $$LocalSavingsGoalsTableTableManager get localSavingsGoals =>
+      $$LocalSavingsGoalsTableTableManager(_db, _db.localSavingsGoals);
 }
 
 // **************************************************************************

@@ -9,17 +9,17 @@ part of 'sync_engine.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
-/// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
+/// Listened to by UI layers (e.g. in SyncNotificationOverlay) to show messages.
 
 @ProviderFor(SyncNotification)
 final syncNotificationProvider = SyncNotificationProvider._();
 
 /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
-/// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
+/// Listened to by UI layers (e.g. in SyncNotificationOverlay) to show messages.
 final class SyncNotificationProvider
     extends $NotifierProvider<SyncNotification, String?> {
   /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
-  /// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
+  /// Listened to by UI layers (e.g. in SyncNotificationOverlay) to show messages.
   SyncNotificationProvider._()
     : super(
         from: null,
@@ -47,10 +47,10 @@ final class SyncNotificationProvider
   }
 }
 
-String _$syncNotificationHash() => r'ae2db031b490f3cfcb3887a0d7fb4fb35b4a086f';
+String _$syncNotificationHash() => r'53149cd7ff61c54e1d903aab960cd2bd0afcc345';
 
 /// Strongly typed sync notification notifier for non-blocking UI toasts/banners.
-/// Listened to by UI layers (e.g. in HomeScreen or overlay) to show messages.
+/// Listened to by UI layers (e.g. in SyncNotificationOverlay) to show messages.
 
 abstract class _$SyncNotification extends $Notifier<String?> {
   String? build();

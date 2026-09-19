@@ -14,8 +14,9 @@ part 'app_database.g.dart';
 /// - A pending action queue (for offline-first sync to backend)
 /// - Local cached transaction history (ledger) - used for sync queue management
 /// - Recent transaction history (user-facing) - cached from Firestore for offline viewing
+/// - Local cached savings goals (NovaSave feature) - cached from Firestore for offline viewing
 @DriftDatabase(
-  tables: [PendingQueueItems, LocalTransactions, RecentTransactions],
+  tables: [PendingQueueItems, LocalTransactions, RecentTransactions, LocalSavingsGoals],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -30,7 +31,27 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          // Creates the new LocalSavingsGoals table without deleting old transactions
+          await m.createTable(localSavingsGoals); 
+        }
+      },
+      beforeOpen: (details) async {
+        // Enables foreign key constraints in SQLite
+        await customStatement('PRAGMA foreign_keys = ON'); 
+      },
+    );
+  }
+
 
   /// Inserts a new pending queue item.
   Future<String> addPendingQueueItem({
@@ -196,6 +217,88 @@ class AppDatabase extends _$AppDatabase {
   /// Used when user wants to force-refresh from Firestore.
   Future<void> clearRecentTransactions() async {
     await delete(recentTransactions).go();
+  }
+
+  /// --- LocalSavingsGoals (NovaSave Feature) ---
+
+  /// Inserts or updates a savings goal (upsert by id).
+  /// Used to cache savings goals from Firestore for offline viewing and management.
+  Future<void> saveSavingsGoal({
+    required String id,
+    required String userId,
+    required String name,
+    required int targetAmountInKobo,
+    required int currentAmountInKobo,
+    required DateTime targetDate,
+    DateTime? createdAt,
+  }) async {
+    final companion = LocalSavingsGoalsCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      name: Value(name),
+      targetAmountInKobo: Value(BigInt.from(targetAmountInKobo)),
+      currentAmountInKobo: Value(BigInt.from(currentAmountInKobo)),
+      targetDate: Value(targetDate),
+      createdAt: Value(createdAt ?? DateTime.now()),
+    );
+
+    await into(localSavingsGoals).insertOnConflictUpdate(companion);
+  }
+
+  /// Retrieves all savings goals for a specific user.
+  /// Returns a stream for real-time UI updates.
+  Stream<List<LocalSavingsGoal>> watchSavingsGoalsByUserId(String userId) {
+    return (select(localSavingsGoals)
+          ..where((tbl) => tbl.userId.equals(userId))
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .watch();
+  }
+
+  /// Retrieves all savings goals for a specific user as a Future.
+  /// Useful for one-time data retrieval without streaming.
+  Future<List<LocalSavingsGoal>> getSavingsGoalsByUserId(String userId) {
+    return (select(localSavingsGoals)
+          ..where((tbl) => tbl.userId.equals(userId))
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .get();
+  }
+
+  /// Retrieves a specific savings goal by ID.
+  Future<LocalSavingsGoal?> getSavingsGoalById(String id) {
+    return (select(localSavingsGoals)..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  /// Updates the current amount for a savings goal.
+  /// Useful for adding contributions to a goal without replacing the entire record.
+  Future<void> updateSavingsGoalCurrentAmount(
+    String id, {
+    required int currentAmountInKobo,
+  }) async {
+    await (update(localSavingsGoals)..where((tbl) => tbl.id.equals(id))).write(
+      LocalSavingsGoalsCompanion(
+        currentAmountInKobo: Value(BigInt.from(currentAmountInKobo)),
+      ),
+    );
+  }
+
+  /// Deletes a savings goal by ID.
+  /// Use with caution as this permanently removes the goal from local cache.
+  Future<void> deleteSavingsGoal(String id) async {
+    await (delete(localSavingsGoals)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  /// Deletes all savings goals for a specific user.
+  /// Useful for cache cleanup when user switches accounts.
+  Future<void> deleteAllSavingsGoalsByUserId(String userId) async {
+    await (delete(localSavingsGoals)..where((tbl) => tbl.userId.equals(userId)))
+        .go();
+  }
+
+  /// Clears all savings goals (full cache reset).
+  /// Used when user wants to force-refresh from Firestore.
+  Future<void> clearAllSavingsGoals() async {
+    await delete(localSavingsGoals).go();
   }
 }
 

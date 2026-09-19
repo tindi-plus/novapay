@@ -86,3 +86,32 @@ class RecentTransactions extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// Table for locally cached savings goals (NovaSave feature).
+/// These are cached from Firestore `users/{uid}/savingsGoals` sub-collection
+/// and support offline viewing and management.
+class LocalSavingsGoals extends Table {
+  /// Unique identifier for the savings goal (Firestore document ID or UUID)
+  TextColumn get id => text()();
+
+  /// User ID who owns this savings goal
+  TextColumn get userId => text()();
+
+  /// Goal name (e.g., "Emergency Fund", "Vacation Fund")
+  TextColumn get name => text()();
+
+  /// Target amount stored in kobo (64-bit int, e.g., 5000000 = ₦50,000.00)
+  Int64Column get targetAmountInKobo => int64()();
+
+  /// Current saved amount in kobo (64-bit int, e.g., 1250000 = ₦12,500.00)
+  Int64Column get currentAmountInKobo => int64()();
+
+  /// Target date for achieving the goal
+  DateTimeColumn get targetDate => dateTime()();
+
+  /// When the savings goal was created
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+

@@ -171,6 +171,7 @@ class SyncEngine {
     switch (actionType.toLowerCase()) {
       case 'send_money':
         return _functions.httpsCallable('processSendMoney');
+      case 'save_contribute':
       case 'contribute_to_save':
       case 'contribute':
         return _functions.httpsCallable('contributeToSave');

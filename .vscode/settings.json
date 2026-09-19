@@ -7,5 +7,28 @@
   // File watcher excludes to avoid indexing and performance issues
   "files.watcherExclude": {
     "**/.fvm": true
+  },
+  "chat.tools.terminal.autoApprove": {
+    "/^python3 - <<'PY'\nfrom pathlib import Path\np = Path\\('/Users/tindisommers/Library/Application Support/Code/copilot-terminal-output/copilot-terminal-output-d7596c2d-bdde-4274-8a35-675712696e35\\.txt'\\)\ntext = p\\.read_text\\(errors='ignore'\\)\nfor key in \\['ProviderException','NoSuchMethodError','Unhandled','EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK','Some tests failed','00:01 \\+','Failed to build','assertion','Expected:'\\]:\n    idx = text\\.find\\(key\\)\n    if idx!=-1:\n        print\\('\\\\n--- KEY', key, 'at', idx, '---\\\\n'\\)\n        snippet = text\\[max\\(0,idx-1000\\):idx\\+2000\\]\n        print\\(snippet\\)\n        print\\('\\\\n'\\)\nPY$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^flutter test test/home_screen_test\\.dart$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^python3 - <<'PY'\nfrom pathlib import Path\np = Path\\('/Users/tindisommers/Library/Application Support/Code/copilot-terminal-output'\\)\nfiles = sorted\\(p\\.glob\\('\\*\\.txt'\\)\\)\nlatest = files\\[-1\\]\ntext = latest\\.read_text\\(errors='ignore'\\)\n# show the final summary lines if present\nfor line in text\\.splitlines\\(\\)\\[-120:\\]:\n    print\\(line\\)\nPY$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^flutter test test/home_screen_test\\.dart --reporter expanded$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "flutter": true,
+    "/^python3 - <<'PY'\nfrom pathlib import Path\np = Path\\('/Users/tindisommers/Library/Application Support/Code/copilot-terminal-output'\\)\nfiles = sorted\\(p\\.glob\\('\\*\\.txt'\\)\\)\nlatest = files\\[-1\\]\ntext = latest\\.read_text\\(errors='ignore'\\)\n# Print only final 80 lines for proof of pass/fail\nfor line in text\\.splitlines\\(\\)\\[-80:\\]:\n    print\\(line\\)\nPY$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
   }
 }
