@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../common/models/transaction_model.dart';
 import '../../../common/models/user_model.dart';
 import '../../../router/app_router.dart';
 import '../../authentication/providers/auth_providers.dart';
@@ -354,35 +355,46 @@ class HomeScreen extends ConsumerWidget {
                       readOnly: true,
                       child: Card(
                         margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: tx.displayColor.withValues(alpha: 0.1),
-                              shape: BoxShape.circle,
+                        child: InkWell(
+                          onTap: () => context.push('/transaction-details/${tx.id}'),
+                          child: ListTile(
+                            leading: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: tx.displayColor.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.arrow_downward,
+                                color: tx.displayColor,
+                                size: 20,
+                              ),
                             ),
-                            child: Icon(
-                              Icons.arrow_downward,
-                              color: tx.displayColor,
-                              size: 20,
+                            title: Text(
+                              tx.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          title: Text(
-                            tx.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            tx.formattedDate,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: Text(
-                            tx.formattedAmountWithSign,
-                            style: TextStyle(
-                              color: tx.displayColor,
-                              fontWeight: FontWeight.bold,
+                            subtitle: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    tx.formattedDate,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                _buildStatusBadge(tx),
+                              ],
+                            ),
+                            trailing: Text(
+                              tx.formattedAmountWithSign,
+                              style: TextStyle(
+                                color: tx.displayColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -400,6 +412,33 @@ class HomeScreen extends ConsumerWidget {
           error: (e, st) => Center(child: Text('Error: $e')),
         ),
       ],
+    );
+  }
+
+  /// Builds a status badge for the transaction
+  Widget _buildStatusBadge(TransactionModel tx) {
+    final statusEnum = tx.statusEnum;
+    final statusColor = statusEnum == TransactionStatusType.completed
+        ? const Color(0xFF66BB6A)
+        : statusEnum == TransactionStatusType.pending
+            ? Colors.orange
+            : const Color(0xFFEF5350);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: statusColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: statusColor, width: 0.5),
+      ),
+      child: Text(
+        statusEnum.displayName,
+        style: TextStyle(
+          color: statusColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 

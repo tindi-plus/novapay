@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../features/authentication/presentation/login_screen.dart';
 import '../features/authentication/presentation/signup_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/home/presentation/transaction_details_screen.dart';
 import '../features/send_money/presentation/send_money_screen.dart';
 import '../features/nova_save/presentation/nova_save_screen.dart';
 import '../features/authentication/providers/auth_providers.dart';
@@ -17,6 +18,7 @@ const String registerPath = '/register';
 const String homePath = '/home';
 const String sendMoneyPath = '/send-money';
 const String savePath = '/save';
+const String transactionDetailsPath = '/transaction-details';
 
 /// A ChangeNotifier that listens to authStateProvider changes and notifies
 /// GoRouter to re-evaluate the redirect logic. This prevents redirect loops
@@ -111,6 +113,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: savePath,
         builder: (context, state) => const NovaSaveScreen(),
+      ),
+      // Transaction details route
+      GoRoute(
+        path: '$transactionDetailsPath/:id',
+        builder: (context, state) {
+          final transactionId = state.pathParameters['id'] ?? '';
+          return TransactionDetailsScreen(transactionId: transactionId);
+        },
       ),
     ],
   );

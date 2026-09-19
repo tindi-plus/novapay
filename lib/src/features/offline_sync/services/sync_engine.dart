@@ -101,6 +101,13 @@ class SyncEngine {
 
   Future<void> _checkConnectivityAndReplay() async {
     if (_isSyncing) return;
+    
+    // Don't waste resources checking connectivity if we don't have pending items
+    final pendingItems = await _queueService.getPendingItems();
+    if (pendingItems.isEmpty) {
+      return;
+    }
+    
     final results = await _connectivity.checkConnectivity();
     final isOnline = results.any((r) =>
         r == ConnectivityResult.wifi || r == ConnectivityResult.mobile);
@@ -132,7 +139,13 @@ class SyncEngine {
             'idempotencyKey': item.idempotencyKey,
           };
 
-          final result = await callable.call(fullPayload);
+          // Call with 30-second timeout to prevent hanging if network drops mid-request
+          final result = await callable.call(fullPayload).timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw TimeoutException('Cloud function call timed out - network may be unstable');
+            },
+          );
 
           if (result.data != null && result.data['success'] == true) {
             await _queueService.updateItemStatus(item.id, TransactionStatus.success);
@@ -153,6 +166,8 @@ class SyncEngine {
             throw Exception(result.data?['message'] ?? 'Remote processing failed');
           }
         } catch (e) {
+          // Update status to failed, but DO NOT delete from queue
+          // The item remains in queue for retry on next connectivity attempt
           await _queueService.updateItemStatus(item.id, TransactionStatus.failed);
           // Only show notification if the sync engine ref is still mounted
           if (ref.mounted) {
