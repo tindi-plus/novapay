@@ -489,7 +489,7 @@ exports.contributeToSave = onCall(async (request) => {
       throw new HttpsError("not-found", "Savings goal not found");
     }
 
-    const userBalance = userDoc.data().balanceInKobo || 0;
+    const userBalance = userDoc.data().walletBalanceInKobo || 0;
     if (userBalance < amountInKobo) {
       throw new HttpsError("failed-precondition", "Insufficient funds");
     }
@@ -508,7 +508,7 @@ exports.contributeToSave = onCall(async (request) => {
     });
 
     transaction.update(userRef, {
-      balanceInKobo: FieldValue.increment(-amountInKobo),
+      walletBalanceInKobo: FieldValue.increment(-amountInKobo),
     });
 
     transaction.update(goalRef, {
