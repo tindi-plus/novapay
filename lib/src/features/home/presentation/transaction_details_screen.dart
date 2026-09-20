@@ -1,4 +1,156 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:intl/intl.dart';
+
+// import '../../../common/models/transaction_model.dart';
+// import '../../../core/database/app_database.dart';
+
+// class TransactionDetailsScreen extends ConsumerWidget {
+//   final String transactionId;
+
+//   const TransactionDetailsScreen({super.key, required this.transactionId});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final txAsync = ref.watch(_transactionDetailsProvider(transactionId));
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Transaction Details')),
+//       body: txAsync.when(
+//         data: (tx) => tx == null
+//             ? const Center(child: Text('Not found'))
+//             : _buildContent(context, tx),
+//         loading: () => const Center(child: CircularProgressIndicator()),
+//         error: (e, st) => Center(child: Text('Error: $e')),
+//       ),
+//     );
+//   }
+
+//   Widget _buildContent(BuildContext context, TransactionModel tx) {
+//     return SafeArea(
+//       child: SingleChildScrollView(
+//         padding: const EdgeInsets.all(24),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             _buildStatusCard(context, tx),
+//             const SizedBox(height: 24),
+//             _detailRow(context, 'Amount', tx.formattedAmountWithSign, color: tx.displayColor),
+//             _detailRow(context, 'Type', tx.typeEnum.displayName),
+//             _detailRow(context, 'Date', DateFormat('MMM d, y • h:mm a').format(tx.createdAt)),
+//             _detailRow(context, 'ID', tx.id, isCopy: true),
+//             _detailRow(context, 'Description', tx.title),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildStatusCard(BuildContext context, TransactionModel tx) {
+//     final status = tx.statusEnum;
+//     final color = status == TransactionStatusType.completed
+//         ? const Color(0xFF66BB6A)
+//         : status == TransactionStatusType.pending
+//             ? Colors.orange
+//             : const Color(0xFFEF5350);
+//     final icon = status == TransactionStatusType.completed
+//         ? Icons.check_circle
+//         : status == TransactionStatusType.pending
+//             ? Icons.schedule
+//             : Icons.cancel;
+
+//     return Card(
+//       color: color,
+//       child: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text('Status',
+//                     style: TextStyle(color: Colors.white70, fontSize: 12)),
+//                 const SizedBox(height: 8),
+//                 Text(status.displayName,
+//                     style: const TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 20,
+//                         fontWeight: FontWeight.bold)),
+//               ],
+//             ),
+//             Icon(icon, color: Colors.white, size: 48),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _detailRow(BuildContext context, String label, String value,
+//       {Color? color, bool isCopy = false}) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+//         const SizedBox(height: 8),
+//         Row(
+//           children: [
+//             Expanded(
+//               child: Text(value,
+//                   style: TextStyle(
+//                       color: color,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.w500),
+//                   maxLines: 2,
+//                   overflow: TextOverflow.ellipsis),
+//             ),
+//             if (isCopy)
+//               IconButton(
+//                 icon: const Icon(Icons.copy, size: 20),
+//                 onPressed: () => ScaffoldMessenger.of(context)
+//                     .showSnackBar(const SnackBar(content: Text('Copied'))),
+//               ),
+//           ],
+//         ),
+//         const SizedBox(height: 12),
+//         Divider(height: 1, color: Colors.grey.withValues(alpha: 0.2)),
+//         const SizedBox(height: 16),
+//       ],
+//     );
+//   }
+// }
+
+// final _transactionDetailsProvider =
+//     FutureProvider.family<TransactionModel?, String>((ref, txId) async {
+//   final db = ref.watch(databaseProvider);
+//   final recentTxs = await db.watchRecentTransactions().first;
+//   for (final tx in recentTxs) {
+//     if (tx.id == txId) {
+//       return TransactionModel(
+//           id: tx.id,
+//           amountInKobo: tx.amountInKobo.toInt(),
+//           type: tx.type,
+//           title: tx.title,
+//           status: tx.status,
+//           createdAt: tx.createdAt);
+//     }
+//   }
+//   final pending = await db.watchPendingQueueItems().first;
+//   for (final item in pending) {
+//     if (item.id == txId) {
+//       return TransactionModel(
+//           id: item.id,
+//           amountInKobo: 0,
+//           type: 'debit',
+//           title: 'Pending',
+//           status: 'pending',
+//           createdAt: item.createdAt);
+//     }
+//   }
+//   return null;
+// });
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -13,14 +165,29 @@ class TransactionDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final txAsync = ref.watch(_transactionDetailsProvider(transactionId));
+
     return Scaffold(
       appBar: AppBar(title: const Text('Transaction Details')),
       body: txAsync.when(
         data: (tx) => tx == null
-            ? const Center(child: Text('Not found'))
+            ? Center(
+                child: Semantics(
+                  liveRegion: true,
+                  child: Text('Transaction not found'),
+                ),
+              )
             : _buildContent(context, tx),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
+        loading: () => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Loading transaction details',
+          ),
+        ),
+        error: (e, st) => Center(
+          child: Semantics(
+            liveRegion: true,
+            child: Text('Error loading transaction: $e'),
+          ),
+        ),
       ),
     );
   }
@@ -34,9 +201,22 @@ class TransactionDetailsScreen extends ConsumerWidget {
           children: [
             _buildStatusCard(context, tx),
             const SizedBox(height: 24),
-            _detailRow(context, 'Amount', tx.formattedAmountWithSign, color: tx.displayColor),
+            Semantics(header: true, child: SizedBox.shrink()),
+            _detailRow(
+              context,
+              'Amount',
+              tx.formattedAmountWithSign,
+              color: tx.displayColor,
+              semanticValue: tx.formattedAmountWithSign,
+            ),
             _detailRow(context, 'Type', tx.typeEnum.displayName),
-            _detailRow(context, 'Date', DateFormat('MMM d, y • h:mm a').format(tx.createdAt)),
+            _detailRow(
+              context,
+              'Date',
+              DateFormat('MMM d, y • h:mm a').format(tx.createdAt),
+              semanticValue: DateFormat('MMMM d, yyyy, at h:mm a')
+                  .format(tx.createdAt),
+            ),
             _detailRow(context, 'ID', tx.id, isCopy: true),
             _detailRow(context, 'Description', tx.title),
           ],
@@ -50,102 +230,159 @@ class TransactionDetailsScreen extends ConsumerWidget {
     final color = status == TransactionStatusType.completed
         ? const Color(0xFF66BB6A)
         : status == TransactionStatusType.pending
-            ? Colors.orange
-            : const Color(0xFFEF5350);
+        ? Colors.orange
+        : const Color(0xFFEF5350);
     final icon = status == TransactionStatusType.completed
         ? Icons.check_circle
         : status == TransactionStatusType.pending
-            ? Icons.schedule
-            : Icons.cancel;
+        ? Icons.schedule
+        : Icons.cancel;
 
-    return Card(
-      color: color,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Status',
-                    style: TextStyle(color: Colors.white70, fontSize: 12)),
-                const SizedBox(height: 8),
-                Text(status.displayName,
+    // Checks current system scale level without constraints
+    final currentScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final useVerticalLayout = currentScale > 1.3;
+
+    return MergeSemantics(
+      child: Card(
+        color: color,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Flex(
+            // Safely switches to a vertical layout if text becomes very large
+            direction: useVerticalLayout ? Axis.vertical : Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: useVerticalLayout
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Status',
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    status.displayName,
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold)),
-              ],
-            ),
-            Icon(icon, color: Colors.white, size: 48),
-          ],
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              if (useVerticalLayout) const SizedBox(height: 16),
+              ExcludeSemantics(
+                child: Icon(icon, color: Colors.white, size: 48),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _detailRow(BuildContext context, String label, String value,
-      {Color? color, bool isCopy = false}) {
+  Widget _detailRow(
+    BuildContext context,
+    String label,
+    String value, {
+    Color? color,
+    bool isCopy = false,
+    String? semanticValue,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: Text(value,
-                  style: TextStyle(
+        MergeSemantics(
+          child: Semantics(
+            value: semanticValue ?? value,
+            label: label,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ExcludeSemantics(
+                  child: Text(
+                    label,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ExcludeSemantics(
+                  child: Text(
+                    value,
+                    style: TextStyle(
                       color: color,
                       fontSize: 16,
-                      fontWeight: FontWeight.w500),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+                      fontWeight: FontWeight.w500,
+                    ),
+                    // Removed maxLines cap entirely so text can wrap infinitely
+                    // to accommodate any ultra-high system text scale factor
+                    softWrap: true,
+                  ),
+                ),
+              ],
             ),
-            if (isCopy)
-              IconButton(
-                icon: const Icon(Icons.copy, size: 20),
-                onPressed: () => ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Copied'))),
-              ),
-          ],
+          ),
         ),
+        if (isCopy) ...[
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              icon: const Icon(Icons.copy, size: 20),
+              tooltip: 'Copy $label to clipboard',
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: value));
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Copied $label to clipboard'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
-        Divider(height: 1, color: Colors.grey.withValues(alpha: 0.2)),
+        const Divider(height: 1, color: Colors.transparent),
         const SizedBox(height: 16),
       ],
     );
   }
 }
 
+// Provider setup remains exactly the same...
 final _transactionDetailsProvider =
     FutureProvider.family<TransactionModel?, String>((ref, txId) async {
-  final db = ref.watch(databaseProvider);
-  final recentTxs = await db.watchRecentTransactions().first;
-  for (final tx in recentTxs) {
-    if (tx.id == txId) {
-      return TransactionModel(
-          id: tx.id,
-          amountInKobo: tx.amountInKobo.toInt(),
-          type: tx.type,
-          title: tx.title,
-          status: tx.status,
-          createdAt: tx.createdAt);
-    }
-  }
-  final pending = await db.watchPendingQueueItems().first;
-  for (final item in pending) {
-    if (item.id == txId) {
-      return TransactionModel(
-          id: item.id,
-          amountInKobo: 0,
-          type: 'debit',
-          title: 'Pending',
-          status: 'pending',
-          createdAt: item.createdAt);
-    }
-  }
-  return null;
-});
-
+      final db = ref.watch(databaseProvider);
+      final recentTxs = await db.watchRecentTransactions().first;
+      for (final tx in recentTxs) {
+        if (tx.id == txId) {
+          return TransactionModel(
+            id: tx.id,
+            amountInKobo: tx.amountInKobo.toInt(),
+            type: tx.type,
+            title: tx.title,
+            status: tx.status,
+            createdAt: tx.createdAt,
+          );
+        }
+      }
+      final pending = await db.watchPendingQueueItems().first;
+      for (final item in pending) {
+        if (item.id == txId) {
+          return TransactionModel(
+            id: item.id,
+            amountInKobo: 0,
+            type: 'debit',
+            title: 'Pending',
+            status: 'pending',
+            createdAt: item.createdAt,
+          );
+        }
+      }
+      return null;
+    });
