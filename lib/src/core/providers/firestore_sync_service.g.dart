@@ -63,4 +63,4 @@ final class FirestoreSyncServiceProvider
 }
 
 String _$firestoreSyncServiceHash() =>
-    r'd801fcfa5866ed5eebcbbb61d7a48d70b68aecad';
+    r'3ab6ce4064dc2dbd834ff2a52e75baff558e8cb9';

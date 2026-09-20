@@ -59,4 +59,4 @@ final class NovaSaveRepositoryProvider
 }
 
 String _$novaSaveRepositoryHash() =>
-    r'c304496a65e7bab40bc7094ac767a9df30227155';
+    r'd5628b7a816ad346a6196b031d8a56a169a70858';

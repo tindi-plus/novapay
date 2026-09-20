@@ -64,6 +64,7 @@ String _$recentTransactionsRepositoryHash() =>
 
 /// StreamProvider that exposes recent transactions to the UI.
 /// Automatically watches Drift cache and Firestore updates.
+/// Also includes pending transactions from the offline queue.
 ///
 /// IMPORTANT: All provider watching is done here at the Riverpod provider level
 /// to ensure proper dependency tracking and prevent multiple database instances.
@@ -74,6 +75,7 @@ final recentTransactionsProviderProvider =
 
 /// StreamProvider that exposes recent transactions to the UI.
 /// Automatically watches Drift cache and Firestore updates.
+/// Also includes pending transactions from the offline queue.
 ///
 /// IMPORTANT: All provider watching is done here at the Riverpod provider level
 /// to ensure proper dependency tracking and prevent multiple database instances.
@@ -90,6 +92,7 @@ final class RecentTransactionsProviderProvider
         $StreamProvider<List<TransactionModel>> {
   /// StreamProvider that exposes recent transactions to the UI.
   /// Automatically watches Drift cache and Firestore updates.
+  /// Also includes pending transactions from the offline queue.
   ///
   /// IMPORTANT: All provider watching is done here at the Riverpod provider level
   /// to ensure proper dependency tracking and prevent multiple database instances.
@@ -120,4 +123,4 @@ final class RecentTransactionsProviderProvider
 }
 
 String _$recentTransactionsProviderHash() =>
-    r'0f4ad763def2d9998a5c6d69c8045dc8ea05bc43';
+    r'e9efb187aa3cf0df3c2d9d01391299e2eeb759d8';
