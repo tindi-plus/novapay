@@ -67,6 +67,9 @@ dependencies:
   uuid: ^4.6.0
   flutter_local_notifications: ^22.3.1
 
+  # Biometric Authentication
+  local_auth: ^2.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

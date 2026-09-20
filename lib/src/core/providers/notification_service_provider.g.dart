@@ -12,6 +12,12 @@ part of 'notification_service_provider.dart';
 ///
 /// Initializes the service on first access and keeps it alive throughout
 /// the app lifecycle (keepAlive: true).
+///
+/// This provider ensures that:
+/// 1. The notification service is initialized exactly once
+/// 2. Permissions are requested immediately upon initialization
+/// 3. The service remains available for the entire app lifecycle
+/// 4. Any initialization errors are logged but don't crash the app
 
 @ProviderFor(notificationService)
 final notificationServiceProvider = NotificationServiceProvider._();
@@ -20,6 +26,12 @@ final notificationServiceProvider = NotificationServiceProvider._();
 ///
 /// Initializes the service on first access and keeps it alive throughout
 /// the app lifecycle (keepAlive: true).
+///
+/// This provider ensures that:
+/// 1. The notification service is initialized exactly once
+/// 2. Permissions are requested immediately upon initialization
+/// 3. The service remains available for the entire app lifecycle
+/// 4. Any initialization errors are logged but don't crash the app
 
 final class NotificationServiceProvider
     extends
@@ -35,6 +47,12 @@ final class NotificationServiceProvider
   ///
   /// Initializes the service on first access and keeps it alive throughout
   /// the app lifecycle (keepAlive: true).
+  ///
+  /// This provider ensures that:
+  /// 1. The notification service is initialized exactly once
+  /// 2. Permissions are requested immediately upon initialization
+  /// 3. The service remains available for the entire app lifecycle
+  /// 4. Any initialization errors are logged but don't crash the app
   NotificationServiceProvider._()
     : super(
         from: null,
@@ -62,4 +80,4 @@ final class NotificationServiceProvider
 }
 
 String _$notificationServiceHash() =>
-    r'61d1172d23639206f3f76863e46ca6eec194e0b0';
+    r'112af5d051e5dc059ad0832a44c3abbfeb0181de';
