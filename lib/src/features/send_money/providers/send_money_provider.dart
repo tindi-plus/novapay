@@ -289,32 +289,3 @@ final getLocalTransactionByIdProvider = FutureProvider.family<LocalTransaction?,
   final database = ref.watch(databaseProvider);
   return database.getLocalTransactionById(id);
 });
-
-
-/// Watch pending transactions from Drift queue
-// @riverpod
-// Stream<List<PendingQueueItem>> watchPendingTransactions(
-//   WatchPendingTransactionsRef ref,
-// ) {
-//   final database = ref.watch(databaseProvider);
-//   return database.watchPendingQueueItems();
-// }
-
-/// Watch local transactions history
-// @riverpod
-// Stream<List<LocalTransaction>> watchLocalTransactions(
-//   WatchLocalTransactionsRef ref,
-// ) {
-//   final database = ref.watch(databaseProvider);
-//   return database.watchLocalTransactions();
-// }
-
-/// Get specific transaction by ID
-// @riverpod
-// Future<LocalTransaction?> getLocalTransactionById(
-//   GetLocalTransactionByIdRef ref,
-//   String id,
-// ) {
-//   final database = ref.watch(databaseProvider);
-//   return database.getLocalTransactionById(id);
-// }
