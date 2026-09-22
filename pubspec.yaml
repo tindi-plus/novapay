@@ -81,6 +81,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+  # Testing & Mocking
+  mockito: ^5.4.0
+  integration_test:
+    sdk: flutter
+
   # Code Generation
   build_runner: ^2.4.9
   freezed: ^4.0.1

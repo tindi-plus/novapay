@@ -93,12 +93,13 @@ NovaPay implements an Offline-First, Serverless Fintech Architecture built on Fl
 ```
 * Initialize an active Android Virtual Device (AVD) using Android Studio or the Command Line Tools.
 
-### Installation & Execution
+<!-- ### Installation & Execution
+
 
 1. Clone the codebase, resolve dependencies, and deploy the application to your targeted Android environment:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/tindi-plus/novapay
 cd novapay
 flutter pub get
 flutter run
@@ -113,6 +114,64 @@ flutter devices
 
 # Target the specified Android emulator instance
 flutter run -d emulator-5554
+
+``` -->
+
+
+### Installation & Execution
+
+You can set up and launch NovaPay automatically using our automated launch script, or manually step-by-step.
+
+#### Option 1: Quick Start (Automated Script)
+
+Run our automated setup script to handle version management, emulator launching, dependency resolution, and application deployment in a single command.
+
+```bash
+curl -sSL https://raw.githubusercontent.com/tindi-plus/novapay/main/run_app.sh | bash
+
+```
+
+> **What this script does automatically:**
+> 1. **FVM Setup:** Verifies if Flutter Version Management ([FVM](https://fvm.app/?utm_source=gemini)) is installed and installs it globally via `pub` if missing.
+> 2. **Flutter Pinning:** Installs and locks the project to **Flutter v3.47.4** locally using FVM.
+> 3. **Repository Setup:** Clones the codebase into `./novapay` (if not already present) and switches into the project directory.
+> 4. **Emulator Detection & Launch:** Checks for active Android devices via `adb`. If no emulator is running, it automatically boots your default Android Virtual Device (AVD) and waits for system startup to finish.
+> 5. **Execution:** Resolves project dependencies (`fvm flutter pub get`) and deploys the app directly to the active emulator (`fvm flutter run`).
+> 
+> 
+
+---
+
+#### Option 2: Manual Setup
+
+If you prefer to manage your environment manually:
+
+1. **Clone the codebase and navigate into the directory:**
+```bash
+git clone https://github.com/tindi-plus/novapay
+cd novapay
+
+```
+
+
+2. **Ensure Flutter 3.47.4 is active:**
+```bash
+fvm install 3.47.4
+fvm use 3.47.4
+
+```
+
+
+3. **Install dependencies and deploy to your running Android device/emulator:**
+```bash
+fvm flutter pub get
+fvm flutter run
+
+```
+
+
+
+```
 
 ```
 
